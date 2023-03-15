@@ -15,6 +15,8 @@ Voici les exigences pour chaque fonctionnalité :
 
 ### A1 10xp
 
+#### Implémenté / Non-implémenté
+
 La liste des contrevenants est obtenue en format CSV à l'aide d'une requête HTTP et son contenu est stocké dans une base de données SQLite. La modélisation de la base de données est à votre discrétion.
 
 Les données sont accessibles à partir de l'adresse suivante : https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1-b208-d8744dca8fc6/download/violations.csv
@@ -22,6 +24,8 @@ Les données sont accessibles à partir de l'adresse suivante : https://data.mon
 À ce point-ci, vous ne devez faire qu’un script Python qui télécharge les données et insère les données dans la base de données. Vous pouvez assumer que la base de données existe déjà lors de l’exécution du script (le script ne doit pas créer la base de données, ni la vider). Vous devez également fournir le script SQL pour créer la base de données ainsi qu’une base de données déjà créée mais vide pour des fins de tests.
 
 ### A2 10xp
+
+#### Implémenté / Non-implémenté
 
 Construire une application Flask pour accéder aux données de la base de données. La page d’accueil offre un outil de recherche qui permet de trouver les contrevenants par :
 
@@ -33,9 +37,13 @@ Les résultats de la recherche doivent s’afficher sur une nouvelle page. Pour 
 
 ### A3 5xp
 
+#### Implémenté / Non-implémenté
+
 Mettre en place un BackgroundScheduler dans l’application Flask afin d’extraire les données de la ville de Montréal à chaque jour, à minuit, et mettre à jour les données de la base de données. Une fois par jour, les données doivent être synchronisées avec celles de la ville.
 
 ### A4 10xp
+
+#### Implémenté / Non-implémenté
 
 Le système offre un service REST permettant d'obtenir la liste des contrevenants ayant commis une infraction entre deux dates spécifiées en paramètre. Les dates sont spécifiées selon le format ISO 8601.
 Les données retournées sont en format JSON.
@@ -46,6 +54,8 @@ Une route /doc doit être disponible et afficher la représentation HTML de la d
 
 ### A5 10xp
 
+#### Implémenté / Non-implémenté
+
 Sur la page d’ailleurs du site web, ajouter un petit formulaire de recherche rapide permettant de saisir deux dates. Lorsque l'utilisateur lance la recherche, une requête Ajax contenant les deux dates saisies est envoyée à la route définie en A4. Lorsque la réponse Ajax revient, l'application affiche la liste des contrevenants dans un tableau. 
 
 Le tableau contient 2 colonnes :
@@ -54,18 +64,26 @@ Le tableau contient 2 colonnes :
 
 ### A6 10xp
 
+#### Implémenté / Non-implémenté
+
 L'application du point A5 offre un mode de recherche par nom du restaurant. La liste de tous les contrevenants est prédéterminée dans une liste déroulante et l'utilisateur choisira un restaurant parmi cette liste. Lorsque l'utilisateur lance la recherche, une requête Ajax est envoyée à un service REST que
 vous devez créer à cet effet. Lorsque la réponse Ajax revient, l'application affiche l'information des différentes infractions du restaurant.
 
 ### B1 5xp
 
+#### Implémenté / Non-implémenté
+
 Le système détecte les nouveaux contrevenants depuis la dernière importation de données, en dresse une liste sans doublon et l'envoi par courriel automatiquement. L'adresse du destinataire du courriel est stocké dans un fichier de configuration en format YAML.
 
 ### B2 10xp
 
+#### Implémenté / Non-implémenté
+
 Les noms des nouveaux contrevenants sont publiés automatiquement sur un compte Twitter.
 
 ### C1 10xp
+
+#### Implémenté / Non-implémenté
 
 Le système offre un service REST permettant d'obtenir la liste des établissements ayant commis une ou
 plusieurs infractions. Pour chaque établissement, on indique le nombre d'infractions connues. La liste
@@ -74,14 +92,20 @@ est triée en ordre décroissant du nombre d'infractions. Le service doit être 
 
 ### C2 5xp
 
+#### Implémenté / Non-implémenté
+
 Le système offre un service permettant d'obtenir exactement les mêmes données que le point C1 mais en format XML. L'encodage de caractères doit être UTF-8. Le service doit être documenté avec RAML sur /doc.
 
 ### C3 5xp
+
+#### Implémenté / Non-implémenté
 
 Le système offre un service permettant d'obtenir exactement les mêmes données que le point C1 mais en format CSV. L'encodage de caractères doit être UTF-8. Le service doit être documenté avec RAML
 sur /doc.
 
 ### D1 15xp
+
+#### Implémenté / Non-implémenté
 
 Le système offre un service REST permettant de faire une demande d’inspection à la ville. Le document JSON doit être validé avec json-schema. Le service doit permettre de recevoir les données suivantes :
 
@@ -99,19 +123,27 @@ Javascript.
 
 ### D2 5xp
 
+#### Implémenté / Non-implémenté
+
 Le système offre un service REST permettant de supprimer une demande d’inspection. Le service doit
 être documenté avec RAML sur /doc.
 
 ### D3 15xp
+
+#### Implémenté / Non-implémenté
 
 Modifier l'application faite en A5 afin de pouvoir supprimer ou modifier les contrevenants retournés par l'outil de recherche. L'application doit invoquer des services de votre choix avec des appels Ajax et afficher une confirmation en cas de succès ou un message d'erreur en cas d'erreur. Les changements aux
 contrevenants (modification et suppression) doivent être préservés en tout temps, même lors d’une synchronisation quotidienne. Les services doivent être documentés avec RAML sur /doc.
 
 ### D4 15xp
 
+#### Implémenté / Non-implémenté
+
 Le système offre une procédure d'authentification du type « Basic Auth » et permet de restreindre l'accès aux fonctionnalités de modification et suppression de D3 uniquement à un utilisateur prédéfini. Assurez-vous de spécifier clairement les données d’authentification pour la correction.
 
 ### E1 15xp
+
+#### Implémenté / Non-implémenté
 
 Le système offre un service REST permettant à un utilisateur de se créer un profil d'utilisateur. 
 
@@ -126,19 +158,27 @@ Le document JSON doit être validé avec json-schema. Le service doit être docu
 
 ### E2 15xp
 
+#### Implémenté / Non-implémenté
+
 Le système offre une page web pour invoquer le service fait en E1. Le système offre également une option d’authentification. Après l’authentification, une page permettant de modifier la liste des noms d’établissements à surveiller est disponible. L’utilisateur authentifié peut également téléverser une
 photo de profil (qui sera sauvegardée dans la base de données). Vous devez accepter les formats jpg et png.
 
 ### E3 5xp
 
+#### Implémenté / Non-implémenté
+
 Lorsqu'un nouveau contrevenant est détecté, un courriel est automatiquement envoyé à tous les utilisateurs qui surveillent cet établissement.
 
 ### E4 10xp
+
+#### Implémenté / Non-implémenté
 
 Le courriel envoyé au point E3 contient un lien pour se désabonner du restaurant. Le lien amènera à une page HTML qui demandera une confirmation à l'utilisateur. Si l'utilisateur confirme le désabonnement, une requête Ajax invoquera un service REST pour supprimer le restaurant du profil de
 l'utilisateur.
 
 ### F1 15xp
+
+#### Implémenté / Non-implémenté
 
 Le système est entièrement déployé sur la plateforme infonuagique Heroku. Pour compléter ce point, vous pouvez transformer votre projet pour utiliser la base de données PostgreSQL. Il est possible de le faire avec SQLite, c’est donc à votre discrétion.
 
