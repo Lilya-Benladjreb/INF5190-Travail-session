@@ -15,7 +15,7 @@ Voici les exigences pour chaque fonctionnalité :
 
 ### A1 10xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté
 
 La liste des contrevenants est obtenue en format CSV à l'aide d'une requête HTTP et son contenu est stocké dans une base de données SQLite. La modélisation de la base de données est à votre discrétion.
 
