@@ -10,20 +10,12 @@ from datetime import date
 def _build_infraction(result_set_item):
     infraction = {}
     infraction["id"] = result_set_item[0]
-    infraction["id_poursuite"] = result_set_item[1]
-    infraction["id_business"] = result_set_item[2]
-    infraction["infraction_date"] = result_set_item[3]
-    infraction["infraction_description"] = result_set_item[4]
-    infraction["adresse"] = result_set_item[5]
-    infraction["jugement_date"] = result_set_item[4]
-    infraction["infraction_montant"] = result_set_item[8]
-    infraction["etablissement"] = result_set_item[6]
-    infraction["infraction_montant"] = result_set_item[8]
-    infraction["proprietaire"] = result_set_item[7]
-    infraction["ville"] = result_set_item[7]
-    infraction["statut"] = result_set_item[7]
-    infraction["statut_date"] = result_set_item[7]
-    infraction["categorie"] = result_set_item[7]
+    infraction["nom"] = result_set_item[1]
+    infraction["categorie"] = result_set_item[2]
+    infraction["description"] = result_set_item[3]
+    infraction["date_infraction"] = result_set_item[4]
+    infraction["date_jugement"] = result_set_item[5]
+    infraction["montant"] = result_set_item[4]
 
 
 class Database:

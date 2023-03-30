@@ -3,19 +3,34 @@
 #
 # Description: Classe permet l'implémentation de script dans le projet
 #
-
-import pandas as pd
+import csv
 import sqlite3
+import requests
 
-# Lire le fichier CSV et le transformer en DataFrame
-df = pd.read_csv('https://donnees.montreal.ca/dataset/9f6c0b6b-7b1e-4f40-aa28-63642bf9b53e/resource/fcdfdc5b-b5d9-4e7b-9f5e-33f869bb2d31/download/inspection-aliments-contrevenants.csv')
+# URL des données à télécharger
+url = "https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1-b208-d8744dca8fc6/download/violations.csv"
 
-# Create a SQLite database and connect to it
+# Téléchargement des données
+response = requests.get(url)
+
+# Extraction des données CSV
+csv_data = response.content.decode('utf-8')
+
+# Connexion à la base de données SQLite
 conn = sqlite3.connect('db.db')
 
-# Use the to_sql() method of the DataFrame to insert the data into a new table in the database
-df.to_sql('violations', conn)
+# Création d'un objet curseur
+cursor = conn.cursor()
 
-# Close the database connection
+# Boucle pour parcourir chaque ligne du fichier CSV et insérer les données dans la base de données
+for row in csv.reader(csv_data.splitlines()):
+    cursor.execute("INSERT INTO contrevenants (nom, categorie, description, date_infraction, date_jugement, montant) VALUES (?, ?, ?, ?, ?, ?)", row)
+
+# Valider la transaction
+conn.commit()
+
+# Fermer la connexion à la base de données
 conn.close()
+
+
 
