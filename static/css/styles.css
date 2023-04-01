@@ -1,0 +1,93 @@
+/* Style appliqué sur tout le site*/
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family:'Roboto', sans-serif;
+}
+
+/* Style pour footer */
+footer {
+    background-color: #ede3da;
+    padding: 8px;
+}
+
+.entete {
+    font-size: .8em;
+    color: black;
+}
+
+/* Style pour navigation bar */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #ede3da;
+}
+
+nav img {
+    width: 20%;
+}
+  
+nav ul {
+    display: flex;
+    list-style: none;
+}
+  
+nav ul li {
+    margin-left: 1rem;
+}
+  
+nav ul li:first-child {
+    margin-left: 0;
+}
+  
+nav a {
+    font-size: 1em;
+    color: #000000;
+    text-decoration: none;
+}
+  
+/* Style pour search bar */
+.search {
+    margin: 1rem;
+}
+  
+.search input[type="text"] {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+  
+.search button {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    border: none;
+    background-color: #333;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+  
+/* Style for the CSV data */
+table {
+    margin: 1rem;
+    border-collapse: collapse;
+    width: 100%;
+}
+  
+th, td {
+    padding: 0.5rem;
+    text-align: left;
+    border: 1px solid #ccc;
+}
+  
+th {
+    background-color: #333;
+    color: #fff;
+}
+  
