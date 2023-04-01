@@ -6,16 +6,21 @@
 import sqlite3
 from datetime import date
 
-# Créer un objet infraction
-def _build_infraction(result_set_item):
-    infraction = {}
-    infraction["id"] = result_set_item[0]
-    infraction["nom"] = result_set_item[1]
-    infraction["categorie"] = result_set_item[2]
-    infraction["description"] = result_set_item[3]
-    infraction["date_infraction"] = result_set_item[4]
-    infraction["date_jugement"] = result_set_item[5]
-    infraction["montant"] = result_set_item[4]
+# Créer un objet contrevenant
+def _build_contrevenant(result_set_item):
+    contrevenant = {}
+    contrevenant["id"] = result_set_item[0]
+    contrevenant["id_poursuite"] = result_set_item[1]
+    contrevenant["business_id"] = result_set_item[2]
+    contrevenant["etablissement"] = result_set_item[3]
+    contrevenant["categorie"] = result_set_item[4]
+    contrevenant["adresse"] = result_set_item[5]
+    contrevenant["description"] = result_set_item[6]
+    contrevenant["proprietaire"] = result_set_item[7]
+    contrevenant["date_infraction"] = result_set_item[8]
+    contrevenant["date_jugement"] = result_set_item[9]
+    contrevenant["montant"] = result_set_item[10]
+    return contrevenant
 
 
 class Database:
@@ -34,9 +39,10 @@ class Database:
             self.connection.close()
 
     # Créer une liste de toutes les infractions se trouvant dans la bd
-    def get_all_infractions(self):
+    def get_all_contrevenants(self):
         cursor = self.get_connection().cursor()
         query = ("select * form contrevenants order by date_infraction desc, id desc")
         cursor.execute(query)
-        infractions = cursor.fetchall()
-        return
+        contrevenants = cursor.fetchall()
+        return contrevenants
+    

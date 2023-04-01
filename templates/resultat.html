@@ -1,0 +1,33 @@
+{% extends "layout.html"%}
+{% block content%}
+
+<div class="confirmation">
+	<h1>Résultat</h1>
+    <br>
+    <hr>
+    <br>
+	<p>Voici le résultat de votre recherche:</p>
+	    {% if contrevenant | length != 0 %}
+		    {% for contrevenant in contrevenants %}
+            <br>
+            <table class="tab-confirmation">
+                <tr>
+                <th>Nom d'établissement</th>
+                <td>{{ contrevenant.etablissement }}</td>
+                </tr>
+                <tr>
+                <th>Propriétaire</th>
+                <td>{{ contrevenant.proprietaire }}</td>
+                </tr>
+                <th>Adresse</th>
+                <td>{{ contrevenant.adresse }}</td>
+                </tr>
+            </table>
+            <br>
+			{% endfor %}
+		{% else %}
+			<div class="tab-confirmation">Aucun résultat.</div>
+		{% endif %}
+    <p>Bonne journée!</span></p>
+</div>
+{% endblock %}
