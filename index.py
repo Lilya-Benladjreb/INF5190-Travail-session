@@ -17,6 +17,11 @@ from flask import render_template
 from flask import g
 from flask import request
 from database import Database
+from apscheduler.schedulers.background import BackgroundScheduler
+import requests
+import csv
+import sqlite3
+
 
 app = Flask(__name__, static_url_path="", static_folder="static")
 
@@ -27,6 +32,27 @@ def get_db():
         g._database = Database()
     return g._database
 
+# Fonction pour extraire les données de la ville de Montréal et les mettre à jour dans la base de données
+def update_database():
+    url = 'https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1-b208-d8744dca8fc6/download/violations.csv'
+    response = requests.get(url)
+    data = response.content.decode('utf-8')
+    data = csv.reader(data.splitlines(), delimiter=',')
+    conn = sqlite3.connect('db/db.db')
+    cursor = conn.cursor()
+    for row in data:
+        # Vérifier si la ligne existe déjà dans la base de données avant de l'insérer
+        cursor.execute('SELECT * FROM contrevenants WHERE id_poursuite = ?', (row[0],))
+        existing_row = cursor.fetchone()
+        if existing_row is None:
+            cursor.execute('INSERT INTO contrevenants VALUES (?,?,?,?,?,?,?,?,?,?)', row)
+    conn.commit()
+    conn.close()
+
+# Configuration du BackgroundScheduler pour exécuter la fonction update_database() chaque jour à minuit
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=update_database, trigger='interval', days=1, start_date='2023-04-07 00:00:00')
+scheduler.start()
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -49,6 +75,7 @@ def not_found(e):
 def recherche():
     query = request.args.get('query').lower()
     contrevenants = get_db().get_all_contrevenants()
+    filter_contrevenants = _filter_contrevenants(contrevenants, query)
     return render_template('resultat.html', contrevenants=filter_contrevenants)
 
 
@@ -56,10 +83,6 @@ def recherche():
 def _filter_contrevenants(contrevenants, query):
     filter_contrevenants = []
     for contrevenant in contrevenants:
-        if query in contrevenants['etablissement'].lower():
-            filter_contrevenants.append(contrevenant)
-        elif query in contrevenant['proprietaire'].lower():
-            filter_contrevenants.append(contrevenant)
-        elif query in contrevenant['adresse'].lower():
+        if contrevenant['etablissement'].lower() in query or contrevenant['adresse'].lower() in query or contrevenant['proprietaire'].lower() in query:
             filter_contrevenants.append(contrevenant)
     return filter_contrevenants

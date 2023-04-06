@@ -41,8 +41,8 @@ class Database:
     # Créer une liste de toutes les infractions se trouvant dans la bd
     def get_all_contrevenants(self):
         cursor = self.get_connection().cursor()
-        query = ("select * form contrevenants order by date_infraction desc, id desc")
+        query = ("select * from contrevenants")
         cursor.execute(query)
-        contrevenants = cursor.fetchall()
-        return contrevenants
+        all_data = cursor.fetchall()
+        return [_build_contrevenant(item) for item in all_data]
     

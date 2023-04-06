@@ -7,8 +7,7 @@ Le projet consiste à récupérer un ensemble de données provenant de la ville 
 Vous avez la possibilité de construire un projet selon vos préférences. Les diverses fonctionnalités vous offrent un certain nombre de points d'expérience (XP) et vous ouvre le chemin vers d'autres fonctionnalités à développer. Si vous faites le travail individuellement, vous devez accumuler un
 minimum de 100 XP. Si vous faites le travail en équipe de 2 personnes, vous devez accumuler un minimum de 200 XP. Vous n'êtes pas tenu de développer toutes les fonctionnalités mais lorsque vous choisissez une fonctionnalité, vous devez la faire au complet.
 
-Le point de départ est la fonctionnalité A1. Les fonctionnalités ont des dépendances entre elles. Par
-exemple, il faut avoir complété A1 avant de pouvoir faire A2; il faut avoir complété D2 et A5 avant de
+Le point de départ est la fonctionnalité A1. Les fonctionnalités ont des dépendances entre elles. Par exemple, il faut avoir complété A1 avant de pouvoir faire A2; il faut avoir complété D2 et A5 avant de
 pouvoir faire D3.
 
 Voici les exigences pour chaque fonctionnalité :

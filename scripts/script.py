@@ -16,39 +16,43 @@ response = requests.get(url)
 # Extraction des données CSV
 csv_data = response.content.decode('utf-8')
 
+# Convertir les données CSV en liste de dictionnaires
+csv_reader = csv.DictReader(csv_data.splitlines())
+contrevenants = [dict(row) for row in csv_reader]
+
 # Connexion à la base de données SQLite
 conn = sqlite3.connect('db/db.db')
-
-# Création d'un objet curseur
 cursor = conn.cursor()
 
-reader = csv.reader(csv_data.splitlines())
-
 # Boucle pour parcourir chaque ligne du fichier CSV et insérer les données dans la base de données
-for row in reader:
-    # Sauter la première ligne (en-têtes de colonne)
-    next(reader)
-
-    # Extraction des colonnes souhaitées
-    cols_selected = (row[0], row[1], row[6], row[12], row[4], row[3], row[7], row[2], row[5], row[7])
-    id_poursuite = row[0]
-    business_id = row[1]
-    etablissement = row[6]
-    categorie = row[12]
-    adresse = row[4]
-    description = row[3]
-    proprietaire = row[7]
-    date_infraction = row[2]
-    date_jugement = row[5]
-    montant = row[7]
-
-    cursor.execute("INSERT INTO contrevenants (id_poursuite, business_id, etablissement, categorie, adresse, description, proprietaire, date_infraction, date_jugement, montant) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", cols_selected)
-
-# Valider la transaction
+for contrevenant in contrevenants:
+    cursor.execute("""
+        INSERT INTO contrevenants (
+            id_poursuite,
+            business_id,
+            etablissement,
+            categorie,
+            adresse,
+            description,
+            proprietaire,
+            date_infraction,
+            date_jugement,
+            montant
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        contrevenant['id_poursuite'],
+        contrevenant['business_id'],
+        contrevenant['etablissement'],
+        contrevenant['categorie'],
+        contrevenant['adresse'],
+        contrevenant['description'],
+        contrevenant['proprietaire'],
+        contrevenant['date'],
+        contrevenant['date_jugement'],
+        contrevenant['montant']
+    ))
+# Valider la transaction et fermer la connection
 conn.commit()
-
-# Fermer la connexion à la base de données
 conn.close()
-
 
 
