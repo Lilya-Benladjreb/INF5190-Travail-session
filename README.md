@@ -22,6 +22,27 @@ Les données sont accessibles à partir de l'adresse suivante : https://data.mon
 
 À ce point-ci, vous ne devez faire qu’un script Python qui télécharge les données et insère les données dans la base de données. Vous pouvez assumer que la base de données existe déjà lors de l’exécution du script (le script ne doit pas créer la base de données, ni la vider). Vous devez également fournir le script SQL pour créer la base de données ainsi qu’une base de données déjà créée mais vide pour des fins de tests.
 
+#### Pour le tester
+
+Créer la base de donnée:
+````
+sqlite3 db/db.db < db/db.sql
+````
+
+Ajouter les données en activant le script:
+````
+phyton3 script/script.py
+````
+La base de donnée devrait alors être remplie. Pour tester si elle n'est pas vide: 
+````
+bash
+sqlite3 db/db.db
+
+sqlite
+select count(*) from contrevenants;
+
+````
+
 ### A2 10xp
 
 #### Implémenté / Non-implémenté
