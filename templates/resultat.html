@@ -11,6 +11,12 @@
 		    {% for contrevenant in contrevenants %}
             <br>
             <table class="tab-confirmation">
+                <th>Numéro de poursuite</th>
+                <td>{{ contrevenant.id_poursuite }}</td>
+                </tr>
+                <th>Numéro d'établissement</th>
+                <td>{{ contrevenant.business_id }}</td>
+                </tr>
                 <tr>
                 <th>Nom d'établissement</th>
                 <td>{{ contrevenant.etablissement }}</td>
@@ -21,6 +27,21 @@
                 </tr>
                 <th>Adresse</th>
                 <td>{{ contrevenant.adresse }}</td>
+                </tr>
+                <th>Catégorie</th>
+                <td>{{ contrevenant.categorie }}</td>
+                </tr>
+                <th>Date de l'infraction</th>
+                <td>{{ contrevenant.date_infraction }}</td>
+                </tr>
+                <th>Date du jugement</th>
+                <td>{{ contrevenant.date_jugement }}</td>
+                </tr>
+                <th>Description de l'infraction</th>
+                <td>{{ contrevenant.description }}</td>
+                </tr>
+                <th>Montant</th>
+                <td>{{ contrevenant.montant }}</td>
                 </tr>
             </table>
             <br>
