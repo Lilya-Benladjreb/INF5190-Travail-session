@@ -22,7 +22,6 @@ import requests
 import csv
 import sqlite3
 
-
 app = Flask(__name__, static_url_path="", static_folder="static")
 
 
@@ -31,6 +30,7 @@ def get_db():
     if db is None:
         g._database = Database()
     return g._database
+
 
 # Fonction pour extraire les données de la ville de Montréal et les mettre à jour dans la base de données
 def update_database():
@@ -74,10 +74,12 @@ def update_database():
     conn.commit()
     conn.close()
 
+
 # Configuration du BackgroundScheduler pour exécuter la fonction update_database() chaque jour à minuit
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=update_database, trigger="cron", hour=0, minute=0)
 scheduler.start()
+
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -85,9 +87,11 @@ def close_connection(exception):
     if db is not None:
         db.disconnect()
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 # Sert à renvoyer la page 404 lorsque source introuvable
 @app.errorhandler(404)
@@ -98,8 +102,9 @@ def not_found(e):
 # Sert pour le moteur de recherche
 @app.route("/recherche")
 def recherche():
+    database = Database()
     query = request.args.get('query').lower()
-    contrevenants = get_db().get_all_contrevenants()
+    contrevenants = database.get_all_contrevenants()
     filter_contrevenants = _filter_contrevenants(contrevenants, query)
     return render_template('resultat.html', contrevenants=filter_contrevenants)
 
@@ -108,6 +113,7 @@ def recherche():
 def _filter_contrevenants(contrevenants, query):
     filter_contrevenants = []
     for contrevenant in contrevenants:
-        if contrevenant['etablissement'].lower() in query or contrevenant['adresse'].lower() in query or contrevenant['proprietaire'].lower() in query:
+        term = (contrevenant['etablissement'] + contrevenant['adresse'] + contrevenant['proprietaire']).lower()
+        if query in term:
             filter_contrevenants.append(contrevenant)
     return filter_contrevenants

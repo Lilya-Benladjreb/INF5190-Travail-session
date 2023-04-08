@@ -40,7 +40,6 @@ sqlite3 db/db.db
 
 sqlite
 select count(*) from contrevenants;
-
 ````
 
 ### A2 10xp
@@ -57,7 +56,7 @@ Les résultats de la recherche doivent s’afficher sur une nouvelle page. Pour 
 
 ### A3 5xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté 
 
 Mettre en place un BackgroundScheduler dans l’application Flask afin d’extraire les données de la ville de Montréal à chaque jour, à minuit, et mettre à jour les données de la base de données. Une fois par jour, les données doivent être synchronisées avec celles de la ville.
 
