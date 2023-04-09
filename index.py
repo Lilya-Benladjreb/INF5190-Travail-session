@@ -99,21 +99,61 @@ def not_found(e):
     return render_template('404.html'), 404
 
 
-# Sert pour le moteur de recherche
-@app.route("/recherche")
-def recherche():
+# Sert pour le moteur de recherche par etablissement
+@app.route("/recherche-etablissement")
+def recherche_etablissement():
     database = Database()
-    query = request.args.get('query').lower()
+    query = request.args.get('etablissement').lower()
     contrevenants = database.get_all_contrevenants()
-    filter_contrevenants = _filter_contrevenants(contrevenants, query)
+    filter_contrevenants = _filter_contrevenants_etablissement(contrevenants, query)
+    return render_template('resultat.html', contrevenants=filter_contrevenants)
+
+
+# Sert pour le moteur de recherche par propriétaire
+@app.route("/recherche-proprietaire")
+def recherche_proprietaire():
+    database = Database()
+    query = request.args.get('proprietaire').lower()
+    contrevenants = database.get_all_contrevenants()
+    filter_contrevenants = _filter_contrevenants_proprietaire(contrevenants, query)
+    return render_template('resultat.html', contrevenants=filter_contrevenants)
+
+
+# Sert pour le moteur de recherche par adresse
+@app.route("/recherche-adresse")
+def recherche_adresse():
+    database = Database()
+    query = request.args.get('adresse').lower()
+    contrevenants = database.get_all_contrevenants()
+    filter_contrevenants = _filter_contrevenants_adresse(contrevenants, query)
     return render_template('resultat.html', contrevenants=filter_contrevenants)
 
 
 # Sert à filtrer les contrevenants par nom d'établissement, propriétaire et rue
-def _filter_contrevenants(contrevenants, query):
+def _filter_contrevenants_etablissement(contrevenants, query):
     filter_contrevenants = []
     for contrevenant in contrevenants:
-        term = (contrevenant['etablissement'] + contrevenant['adresse'] + contrevenant['proprietaire']).lower()
+        term = contrevenant['etablissement'].lower()
+        if query in term:
+            filter_contrevenants.append(contrevenant)
+    return filter_contrevenants
+
+
+# Sert à filtrer les contrevenants par nom d'établissement, propriétaire et rue
+def _filter_contrevenants_proprietaire(contrevenants, query):
+    filter_contrevenants = []
+    for contrevenant in contrevenants:
+        term = contrevenant['proprietaire'].lower()
+        if query in term:
+            filter_contrevenants.append(contrevenant)
+    return filter_contrevenants
+
+
+# Sert à filtrer les contrevenants par nom d'établissement, propriétaire et rue
+def _filter_contrevenants_adresse(contrevenants, query):
+    filter_contrevenants = []
+    for contrevenant in contrevenants:
+        term = contrevenant['adresse'].lower()
         if query in term:
             filter_contrevenants.append(contrevenant)
     return filter_contrevenants
