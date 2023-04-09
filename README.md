@@ -44,7 +44,7 @@ select count(*) from contrevenants;
 
 ### A2 10xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté 
 
 Construire une application Flask pour accéder aux données de la base de données. La page d’accueil offre un outil de recherche qui permet de trouver les contrevenants par :
 
@@ -53,6 +53,10 @@ Construire une application Flask pour accéder aux données de la base de donné
 * rue (par exemple, tous les restaurants sur le boulevard Rosemont).
 
 Les résultats de la recherche doivent s’afficher sur une nouvelle page. Pour chaque contrevenant, on affiche toutes les données disponibles sur une contravention. Il est possible qu’un restaurant apparaisse plus d’une fois, s’il a eu plusieurs sanctions.
+
+#### Pour le tester
+
+Aller dans la page d'accueil et inscrire une information valide dans un des champs. En appuyant sur `entrer` le resultat s'affichera dans une nouvelle page.
 
 ### A3 5xp
 
