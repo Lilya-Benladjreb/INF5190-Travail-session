@@ -66,7 +66,7 @@ Mettre en place un BackgroundScheduler dans l’application Flask afin d’extra
 
 ### A4 10xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté
 
 Le système offre un service REST permettant d'obtenir la liste des contrevenants ayant commis une infraction entre deux dates spécifiées en paramètre. Les dates sont spécifiées selon le format ISO 8601.
 Les données retournées sont en format JSON.
@@ -75,6 +75,12 @@ Ex. GET /contrevenants?du=2020-05-08&au=2022-05-15
 
 Une route /doc doit être disponible et afficher la représentation HTML de la document RAML du service web.
 
+#### Pour le tester *** à changer lorsque déployé *** 
+
+Aller sur le terminal et utiliser curl -v suivi de la route désirée. Le résultat s'affichera sur le terminal. 
+````
+curl -v http://127.0.0.1:5000/api/contrevenants\?du\=2020-05-08\&au\=2022-05-15
+````
 ### A5 10xp
 
 #### Implémenté / Non-implémenté

@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
 
-from flask import Flask, render_template, g, request
+from flask import Flask, render_template, g, request, jsonify
 from database import Database
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -21,7 +22,9 @@ import csv
 import sqlite3
 
 app = Flask(__name__, static_url_path="", static_folder="static")
-INFRACTION_URL = "https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1-b208-d8744dca8fc6/download/violations.csv"
+INFRACTION_URL = "https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1" \
+                 "-b208-d8744dca8fc6/download/violations.csv "
+
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -130,10 +133,32 @@ def recherche_adresse():
 # Sert au service REST permettant d'obtenir la liste des contrevenants ayant commis une infraction entre deux dates
 @app.route("/api/contrevenants", methods=['GET'])
 def api_get_contrevenant():
+    database = Database()
+    contrevenants = database.get_all_contrevenants()
     start_date = request.args.get('du')
     end_date = request.args.get('au')
-    start_date = datetime.strptime(start_date, '%Y-%m-%d')
-    end_date = datetime.strptime(end_date, '%Y-%m-%d')
+
+    if not start_date:
+        response = {'message': "Paramètre 'du' manquant."}
+        return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
+                                  mimetype='application/json; charset=utf-8')
+    if not end_date:
+        response = {'message': "Paramètre 'au' manquant."}
+        return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
+                                  mimetype='application/json; charset=utf-8')
+
+    try:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    except ValueError:
+        response = {'error': 'Format de date invalide. Utilisez le format ISO 8601 (AAAA-MM-JJ).'}
+        return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
+                                  mimetype='application/json; charset=utf-8')
+
+    filter_contrevenants = [c for c in contrevenants if
+                            start_date <= datetime.strptime(c['date_infraction'], '%Y-%m-%d') <= end_date]
+
+    return jsonify(filter_contrevenants), 200
 
 
 # Sert à filtrer les contrevenants par nom d'établissement
