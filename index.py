@@ -12,18 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import Flask
-from flask import render_template
-from flask import g
-from flask import request
+from flask import Flask, render_template, g, request
 from database import Database
+from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 import requests
 import csv
 import sqlite3
 
 app = Flask(__name__, static_url_path="", static_folder="static")
-
+INFRACTION_URL = "https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1-b208-d8744dca8fc6/download/violations.csv"
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -34,7 +32,7 @@ def get_db():
 
 # Fonction pour extraire les données de la ville de Montréal et les mettre à jour dans la base de données
 def update_database():
-    url = 'https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1-b208-d8744dca8fc6/download/violations.csv'
+    url = INFRACTION_URL
     response = requests.get(url)
     data = response.content.decode('utf-8')
     csv_reader = csv.DictReader(data.splitlines())
@@ -129,7 +127,16 @@ def recherche_adresse():
     return render_template('resultat.html', contrevenants=filter_contrevenants)
 
 
-# Sert à filtrer les contrevenants par nom d'établissement, propriétaire et rue
+# Sert au service REST permettant d'obtenir la liste des contrevenants ayant commis une infraction entre deux dates
+@app.route("/api/contrevenants", methods=['GET'])
+def api_get_contrevenant():
+    start_date = request.args.get('du')
+    end_date = request.args.get('au')
+    start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    end_date = datetime.strptime(end_date, '%Y-%m-%d')
+
+
+# Sert à filtrer les contrevenants par nom d'établissement
 def _filter_contrevenants_etablissement(contrevenants, query):
     filter_contrevenants = []
     for contrevenant in contrevenants:
@@ -139,7 +146,7 @@ def _filter_contrevenants_etablissement(contrevenants, query):
     return filter_contrevenants
 
 
-# Sert à filtrer les contrevenants par nom d'établissement, propriétaire et rue
+# Sert à filtrer les contrevenants par propriétaire
 def _filter_contrevenants_proprietaire(contrevenants, query):
     filter_contrevenants = []
     for contrevenant in contrevenants:
@@ -149,7 +156,7 @@ def _filter_contrevenants_proprietaire(contrevenants, query):
     return filter_contrevenants
 
 
-# Sert à filtrer les contrevenants par nom d'établissement, propriétaire et rue
+# Sert à filtrer les contrevenants par adresse
 def _filter_contrevenants_adresse(contrevenants, query):
     filter_contrevenants = []
     for contrevenant in contrevenants:

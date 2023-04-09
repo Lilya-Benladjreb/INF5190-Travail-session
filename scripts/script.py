@@ -6,6 +6,7 @@
 import csv
 import sqlite3
 import requests
+from datetime import datetime
 
 # URL des données à télécharger
 url = "https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1-b208-d8744dca8fc6/download/violations.csv"
@@ -19,6 +20,14 @@ csv_data = response.content.decode('utf-8')
 # Convertir les données CSV en liste de dictionnaires
 csv_reader = csv.DictReader(csv_data.splitlines())
 contrevenants = [dict(row) for row in csv_reader]
+
+for contrevenant in contrevenants:
+    date_obj = datetime.strptime(contrevenant['date'], '%Y%m%d')
+    formatted_date = date_obj.strftime('%Y-%m-%d')
+    contrevenant['date'] = formatted_date
+    date_jugement_obj = datetime.strptime(contrevenant['date_jugement'], '%Y%m%d')
+    formatted_date_jugement = date_jugement_obj.strftime('%Y-%m-%d')
+    contrevenant['date_jugement'] = formatted_date_jugement
 
 # Connexion à la base de données SQLite
 conn = sqlite3.connect('db/db.db')
