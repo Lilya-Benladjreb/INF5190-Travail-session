@@ -22,6 +22,8 @@ import csv
 import sqlite3
 
 app = Flask(__name__, static_url_path="", static_folder="static")
+app.config['JSON_AS_ASCII'] = False
+
 INFRACTION_URL = "https://data.montreal.ca/dataset/05a9e718-6810-4e73-8bb9-5955efeb91a0/resource/7f939a08-be8a-45e1" \
                  "-b208-d8744dca8fc6/download/violations.csv "
 
@@ -89,7 +91,7 @@ def close_connection(exception):
         db.disconnect()
 
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
 
@@ -101,7 +103,7 @@ def not_found(e):
 
 
 # Sert pour le moteur de recherche par etablissement
-@app.route("/recherche-etablissement")
+@app.route("/recherche-etablissement", methods=["GET"])
 def recherche_etablissement():
     database = Database()
     query = request.args.get('etablissement').lower()
@@ -111,7 +113,7 @@ def recherche_etablissement():
 
 
 # Sert pour le moteur de recherche par propriétaire
-@app.route("/recherche-proprietaire")
+@app.route("/recherche-proprietaire", methods=["GET"])
 def recherche_proprietaire():
     database = Database()
     query = request.args.get('proprietaire').lower()
@@ -121,7 +123,7 @@ def recherche_proprietaire():
 
 
 # Sert pour le moteur de recherche par adresse
-@app.route("/recherche-adresse")
+@app.route("/recherche-adresse", methods=["GET"])
 def recherche_adresse():
     database = Database()
     query = request.args.get('adresse').lower()
@@ -172,9 +174,27 @@ def get_contrevenant():
 def recherche_date():
     query_du = request.args.get("date-du")
     query_au = request.args.get("date-au")
+    database = Database()
+    contrevenants = database.get_all_contrevenants()
+
+    if not query_du:
+        response = {'message': "Paramètre 'du' manquant."}
+        return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
+                                  mimetype='application/json; charset=utf-8')
+    if not query_au:
+        response = {'message': "Paramètre 'au' manquant."}
+        return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
+                                  mimetype='application/json; charset=utf-8')
+
+    filter_contrevenants = _filter_contrevenants_date(contrevenants, query_du, query_au)
+
+    response = jsonify(filter_contrevenants)
+    response.headers.add('Content-Type', 'application/json; charset=utf-8')
+
+    return response, 200
 
 
-# Sert à filtrer les contrevenants par nom d'établissement
+# Sert à filtrer les contraventions par nom d'établissement
 def _filter_contrevenants_etablissement(contrevenants, query):
     filter_contrevenants = []
     for contrevenant in contrevenants:
@@ -184,7 +204,7 @@ def _filter_contrevenants_etablissement(contrevenants, query):
     return filter_contrevenants
 
 
-# Sert à filtrer les contrevenants par propriétaire
+# Sert à filtrer les contraventions par propriétaire
 def _filter_contrevenants_proprietaire(contrevenants, query):
     filter_contrevenants = []
     for contrevenant in contrevenants:
@@ -194,11 +214,21 @@ def _filter_contrevenants_proprietaire(contrevenants, query):
     return filter_contrevenants
 
 
-# Sert à filtrer les contrevenants par adresse
+# Sert à filtrer les contraventions par adresse
 def _filter_contrevenants_adresse(contrevenants, query):
     filter_contrevenants = []
     for contrevenant in contrevenants:
         term = contrevenant['adresse'].lower()
         if query in term:
+            filter_contrevenants.append(contrevenant)
+    return filter_contrevenants
+
+
+# Sert à filter les contraventions par date
+def _filter_contrevenants_date(contrevenants, query_du, query_au):
+    filter_contrevenants = []
+    for contrevenant in contrevenants:
+        term = contrevenant['date_infraction']
+        if query_au >= term >= query_du:
             filter_contrevenants.append(contrevenant)
     return filter_contrevenants
