@@ -73,7 +73,7 @@ Les données retournées sont en format JSON.
 
 Ex. GET /contrevenants?du=2020-05-08&au=2022-05-15
 
-Une route /doc doit être disponible et afficher la représentation HTML de la document RAML du service web.
+Une route /doc doit être disponible et afficher la représentation HTML de la documentation RAML du service web.
 
 #### Pour le tester *** à changer lorsque déployé *** 
 

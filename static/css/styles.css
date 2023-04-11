@@ -13,6 +13,12 @@ footer {
 }
 
 .entete {
+    background-color: #ede3da;
+    border-style: solid;
+    border-color: #cccccc;
+    border-width: thin;
+    padding: 10%;
+    margin: 2%;
     font-size: .8em;
     color: black;
 }
@@ -24,6 +30,7 @@ nav {
     align-items: center;
     padding: 1rem;
     background-color: #ede3da;
+
 }
 
 nav img {
@@ -51,26 +58,22 @@ nav a {
   
 /* Style pour search bar */
 .search {
+    padding: 2% ;
     margin: 1rem;
+}
+
+.forms {
+    margin-top: 5%;
 }
   
 .search input[type="text"] {
-    width: 100%;
-    padding: 0.5rem;
+    width: 50%;
+    margin-left: 25%;
+    margin-bottom: 2%;
+    padding: 1.5rem;
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 16px;
-}
-  
-.search button {
-    margin-left: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    border: none;
-    background-color: #333;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
 }
   
 /* Style for the CSV data */

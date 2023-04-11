@@ -130,9 +130,14 @@ def recherche_adresse():
     return render_template('resultat.html', contrevenants=filter_contrevenants)
 
 
+# Route qui affiche la documentation des services REST de l'application
+@app.route("/doc/", methods=['GET'])
+def get_doc():
+    return render_template("doc.html")
+
 # Sert au service REST permettant d'obtenir la liste des contrevenants ayant commis une infraction entre deux dates
 @app.route("/api/contrevenants", methods=['GET'])
-def api_get_contrevenant():
+def get_contrevenant():
     database = Database()
     contrevenants = database.get_all_contrevenants()
     start_date = request.args.get('du')

@@ -1,16 +1,23 @@
 {% extends "layout.html"%}
 {% block content%}
-        <div class="search">
+    <div class="search">
         <h2>Vous cherchez une contravention en particulier?</h2>
+        <br>
         <p>Il est possible de faire une recherche avec le nom de l'établissement, le nom du propriétaire ou l'adresse.</p>
-        <form method="get" name="search" action="/recherche-etablissement" class="recherche">
-            <input type="text" name="etablissement" class="recherche" placeholder="Rechercher par nom d'établissement">
-        </form>
-                <form method="get" name="search" action="/recherche-proprietaire" class="recherche">
-            <input type="text" name="proprietaire" class="recherche" placeholder="Rechercher par nom du propriétaire">
-        </form>
-                <form method="get" name="search" action="/recherche-adresse" class="recherche">
-            <input type="text" name="adresse" class="recherche" placeholder="Rechercher par adresse">
-        </form>
+        <br>
+        <div class="forms">
+            <form method="get" name="search" action="/recherche-etablissement" class="recherche">
+                <input type="text" name="etablissement" class="recherche" placeholder="Rechercher par nom d'établissement">
+            </form>
+
+            <form method="get" name="search" action="/recherche-proprietaire" class="recherche">
+                <input type="text" name="proprietaire" class="recherche" placeholder="Rechercher par nom du propriétaire">
+            </form>
+
+            <form method="get" name="search" action="/recherche-adresse" class="recherche">
+                <input type="text" name="adresse" class="recherche" placeholder="Rechercher par adresse">
+            </form>
+        </div>
+
     </div>
 {% endblock %}
