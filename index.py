@@ -135,6 +135,7 @@ def recherche_adresse():
 def get_doc():
     return render_template("doc.html")
 
+
 # Sert au service REST permettant d'obtenir la liste des contrevenants ayant commis une infraction entre deux dates
 @app.route("/api/contrevenants", methods=['GET'])
 def get_contrevenant():
@@ -164,6 +165,13 @@ def get_contrevenant():
                             start_date <= datetime.strptime(c['date_infraction'], '%Y-%m-%d') <= end_date]
 
     return jsonify(filter_contrevenants), 200
+
+
+# Sert à la requête Ajax permettant de saisir deux dates. Affiche la liste des contrevenants dans un tableau.
+@app.route("/recherche-date", methods=["GET"])
+def recherche_date():
+    query_du = request.args.get("date-du")
+    query_au = request.args.get("date-au")
 
 
 # Sert à filtrer les contrevenants par nom d'établissement
