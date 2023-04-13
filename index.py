@@ -46,34 +46,34 @@ def update_database():
     cursor = conn.cursor()
     for contrevenant in contrevenants:
         # Vérifier si la ligne existe déjà dans la base de données avant de l'insérer
-        cursor.execute('SELECT * FROM contrevenants WHERE id_poursuite = ?', (contrevenant[0],))
+        cursor.execute("SELECT * FROM contrevenants WHERE id_poursuite = ?", (contrevenant[0],))
         existing_row = cursor.fetchone()
         if existing_row is None:
-            cursor.execute("""
-                INSERT INTO contrevenants (
-                    id_poursuite,
-                    business_id,
-                    etablissement,
-                    categorie,
-                    adresse,
-                    description,
-                    proprietaire,
-                    date_infraction,
-                    date_jugement,
-                    montant
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                contrevenant['id_poursuite'],
-                contrevenant['business_id'],
-                contrevenant['etablissement'],
-                contrevenant['categorie'],
-                contrevenant['adresse'],
-                contrevenant['description'],
-                contrevenant['proprietaire'],
-                contrevenant['date'],
-                contrevenant['date_jugement'],
-                contrevenant['montant']
-            ))
+            cursor.execute("\n"
+                           "                INSERT INTO contrevenants (\n"
+                           "                    id_poursuite,\n"
+                           "                    business_id,\n"
+                           "                    etablissement,\n"
+                           "                    categorie,\n"
+                           "                    adresse,\n"
+                           "                    description,\n"
+                           "                    proprietaire,\n"
+                           "                    date_infraction,\n"
+                           "                    date_jugement,\n"
+                           "                    montant\n"
+                           "                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n"
+                           "            ", (
+                               contrevenant['id_poursuite'],
+                               contrevenant['business_id'],
+                               contrevenant['etablissement'],
+                               contrevenant['categorie'],
+                               contrevenant['adresse'],
+                               contrevenant['description'],
+                               contrevenant['proprietaire'],
+                               contrevenant['date'],
+                               contrevenant['date_jugement'],
+                               contrevenant['montant']
+                           ))
     conn.commit()
     conn.close()
 
@@ -102,7 +102,7 @@ def not_found(e):
     return render_template('404.html'), 404
 
 
-# Sert pour le moteur de recherche par etablissement
+# Sert pour le moteur de recherche par établissement
 @app.route("/recherche-etablissement", methods=["GET"])
 def recherche_etablissement():
     database = Database()

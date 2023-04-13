@@ -21,7 +21,7 @@
 
         <div class="form-ajax">
             Pour une recherche sous forme de date
-            <form method="get" name="search-by-date" action="/recherche-date" onsubmit="return validerRechercheParDate()" class="recherche">
+            <form method="get" name="search-by-date" action="/recherche-date" onsubmit="rechercheAjaxFetch(); return false;"  class="recherche">
                 <label for="date-du">Du</label>
                 <br>
                 <input type="date" id="date-du" name="date-du">

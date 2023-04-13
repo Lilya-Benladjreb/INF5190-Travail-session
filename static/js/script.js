@@ -24,6 +24,7 @@ function soumettreRechercheParDate() {
     if(validerRechercheParDate()) {
         document.forms["search-by-date"].submit();
     }
+    return true;
 }
 
 function rechercheAjaxFetch() {
@@ -33,12 +34,13 @@ function rechercheAjaxFetch() {
     const searchForm = document.getElementById('form-ajax');
     const resultsBody = document.getElementById('results-body');
 
-    searchForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-          const queryDu = document.getElementById('date-du').value;
-          const queryAu = document.getElementById('date-au').value;
+    if(soumettreRechercheParDate()){
+        searchForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const queryDu = document.getElementById('date-du').value;
+            const queryAu = document.getElementById('date-au').value;
 
-          fetch(`${contrevenants_URL}?du=${queryDu}&au=${queryAu}`)
+            fetch(`${contrevenants_URL}?du=${queryDu}&au=${queryAu}`)
                 .then(response => response.json())
                 .then(data => {
                     resultsBody.innerHTML = '';
@@ -53,8 +55,12 @@ function rechercheAjaxFetch() {
                         row.appendChild(nameCell);
                         row.appendChild(countCell);
                         resultsBody.appendChild(row);
-                        });
+                    });
                 });
+        });
+    }else {
+        return false;
+    }
 
-          });
+
 }
