@@ -179,12 +179,10 @@ def recherche_date():
 
     if not query_du:
         response = {'message': "Paramètre 'du' manquant."}
-        return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
-                                  mimetype='application/json; charset=utf-8')
+        return response, 400
     if not query_au:
         response = {'message': "Paramètre 'au' manquant."}
-        return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
-                                  mimetype='application/json; charset=utf-8')
+        return response, 400
 
     filter_contrevenants = _filter_contrevenants_date(contrevenants, query_du, query_au)
 
@@ -193,6 +191,12 @@ def recherche_date():
 
     return response, 200
 
+# Sert à créer un user 
+@app.route('/user', methods=['POST'])
+@validator.validate(
+    request_schema=schema,
+    format_checker='jsonschema'
+)
 
 # Sert à filtrer les contraventions par nom d'établissement
 def _filter_contrevenants_etablissement(contrevenants, query):
