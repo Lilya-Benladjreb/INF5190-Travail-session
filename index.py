@@ -228,6 +228,17 @@ def create_user():
         return {"status": "error", "message": "Validation failed", "errors": str(e)}, 422
 
 
+@app.route('/api/get-etablissements', methods=['GET'])
+def get_etablissements():
+    database = Database()
+    ordered_contrevenants = database.get_list_contrevenants()
+
+    response = jsonify(ordered_contrevenants)
+    response.headers.add('Content-Type', 'application/json; charset=utf-8')
+
+    return response, 200
+
+
 # Sert à filtrer les contraventions par nom d'établissement
 def _filter_contrevenants_etablissement(contrevenants, query):
     filter_contrevenants = []

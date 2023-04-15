@@ -112,12 +112,19 @@ Les noms des nouveaux contrevenants sont publiés automatiquement sur un compte 
 
 ### C1 10xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté
 
 Le système offre un service REST permettant d'obtenir la liste des établissements ayant commis une ou
 plusieurs infractions. Pour chaque établissement, on indique le nombre d'infractions connues. La liste
 est triée en ordre décroissant du nombre d'infractions. Le service doit être documenté avec RAML sur
 /doc.
+
+#### Pour le tester
+Aller à la route suivante sur le fureteur pour voir le résultat en format json.
+```
+ /api/get-etablissements 
+```
+
 
 ### C2 5xp
 
