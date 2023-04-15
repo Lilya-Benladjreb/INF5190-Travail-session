@@ -30,3 +30,17 @@ class Database:
         query = ("select * from contrevenants")
         cursor.execute(query)
         return [dict(row) for row in cursor.fetchall()]
+
+    def create_user(self, nom_user, prenom_user, email, salt, hash):
+        cursor = self.get_connection().cursor()
+        query = "insert into users(nom_user, prenom_user, email, salt, hash) values(?, ?, ?, ?, ?)",\
+                (nom_user, prenom_user,email, salt, hash)
+        cursor.execute(query)
+        return cursor.lastrowid
+
+    def create_request(self, user_id, etablissements):
+        cursor = self.get_connection().cursor()
+        query = "insert into requests (user_id, establishments) values (?, ?)", (user_id, etablissements)
+        cursor.execute(query)
+
+

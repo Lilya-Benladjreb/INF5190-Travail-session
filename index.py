@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import hashlib
 import json
+import uuid
 
 from flask import Flask, render_template, g, request, jsonify
 from database import Database
@@ -20,6 +22,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import requests
 import csv
 import sqlite3
+from schemas.common import ma
+from schemas.common import schema
+from schemas.schema import formulaire_profil_utilisateur, UserSchema
 
 app = Flask(__name__, static_url_path="", static_folder="static")
 app.config['JSON_AS_ASCII'] = False
@@ -147,11 +152,11 @@ def get_contrevenant():
     end_date = request.args.get('au')
 
     if not start_date:
-        response = {'message': "Paramètre 'du' manquant."}
+        response = {'error': "Paramètre 'du' manquant."}
         return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
                                   mimetype='application/json; charset=utf-8')
     if not end_date:
-        response = {'message': "Paramètre 'au' manquant."}
+        response = {'error': "Paramètre 'au' manquant."}
         return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
                                   mimetype='application/json; charset=utf-8')
 
@@ -178,10 +183,10 @@ def recherche_date():
     contrevenants = database.get_all_contrevenants()
 
     if not query_du:
-        response = {'message': "Paramètre 'du' manquant."}
+        response = {'error': "Paramètre 'du' manquant."}
         return response, 400
     if not query_au:
-        response = {'message': "Paramètre 'au' manquant."}
+        response = {'error': "Paramètre 'au' manquant."}
         return response, 400
 
     filter_contrevenants = _filter_contrevenants_date(contrevenants, query_du, query_au)
@@ -191,12 +196,37 @@ def recherche_date():
 
     return response, 200
 
-# Sert à créer un user 
-@app.route('/user', methods=['POST'])
-@validator.validate(
-    request_schema=schema,
-    format_checker='jsonschema'
-)
+
+# Sert à créer un nouvel utilisateur dans la BD
+@app.route('/api/post-user', methods=['POST'])
+@schema.validate(formulaire_profil_utilisateur)
+def create_user():
+    json_data = request.get_json()
+    nom_user = json_data['nom_user']
+    prenom_user = json_data['prenom_user']
+    email = json_data['adresse_courriel']
+    etablissements = ','.join(json_data['etablissements'])
+    password = json_data['mot_de_passe']
+    db = Database
+
+    try:
+        data, errors = UserSchema().load(json_data)
+        if errors:
+            return {"status": "error", "message": "Validation échoué", "errors": errors}, 422
+        else:
+            if nom_user == "" or prenom_user == "" or password == "" or email == "" or etablissements == "":
+                return jsonify({'error': 'svp remplir tous les champs demandés'}), 400
+            else:
+                salt = uuid.uuid4().hex
+                hashed_password = hashlib.sha512(str(password + salt).encode("utf-8")).hexdigest()
+                user_id = db.create_user(Database, nom_user, prenom_user, email, salt, hashed_password)
+                db.create_request(Database, user_id, etablissements)
+                db.commit()
+                db.close()
+            return jsonify({'message': 'Profil utilisateur créé avec succès'}), 201
+    except Exception as e:
+        return {"status": "error", "message": "Validation failed", "errors": str(e)}, 422
+
 
 # Sert à filtrer les contraventions par nom d'établissement
 def _filter_contrevenants_etablissement(contrevenants, query):
