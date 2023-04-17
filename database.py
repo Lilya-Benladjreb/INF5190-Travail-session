@@ -31,7 +31,7 @@ class Database:
         cursor.execute(query)
         return [dict(row) for row in cursor.fetchall()]
 
-    # Permert de créer un nouvel utilisateur dns la bd
+    # Permet de créer un nouvel utilisateur dns la bd
     def create_user(self, nom_user, prenom_user, email, salt, hash):
         cursor = self.get_connection().cursor()
         query = "insert into users(nom_user, prenom_user, email, salt, hash) values(?, ?, ?, ?, ?)",\
@@ -48,7 +48,7 @@ class Database:
     # Permet de dresser une liste d'établissements qui indique leur nom et nombre de contraventions recues
     def get_list_contrevenants(self):
         cursor = self.get_connection().cursor()
-        query = "select etablissement, count(id_poursuite) as nb_poursuites from contrevenants " \
-                "group by etablissement order by nb_poursuites desc "
+        query = "select etablissement, count(id_poursuite) as nb_infractions from contrevenants " \
+                "group by etablissement order by nb_infractions desc "
         cursor.execute(query)
         return [dict(row) for row in cursor.fetchall()]

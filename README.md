@@ -122,7 +122,7 @@ est triée en ordre décroissant du nombre d'infractions. Le service doit être 
 #### Pour le tester
 Aller à la route suivante sur le fureteur pour voir le résultat en format json.
 ```
- /api/get-etablissements 
+/api/get-etablissements-by-infractions-json
 ```
 
 

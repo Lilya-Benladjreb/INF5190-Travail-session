@@ -12,17 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import hashlib
-import json
 import uuid
-
+import requests
+import csv
+import sqlite3
+import xml.etree.ElementTree as ET
 from flask import Flask, render_template, g, request, jsonify
 from database import Database
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
-import requests
-import csv
-import sqlite3
-from schemas.common import ma
 from schemas.common import schema
 from schemas.schema import formulaire_profil_utilisateur, UserSchema
 
@@ -110,9 +108,8 @@ def not_found(e):
 # Sert pour le moteur de recherche par établissement
 @app.route("/recherche-etablissement", methods=["GET"])
 def recherche_etablissement():
-    database = Database()
     query = request.args.get('etablissement').lower()
-    contrevenants = database.get_all_contrevenants()
+    contrevenants = get_db().get_all_contrevenants()
     filter_contrevenants = _filter_contrevenants_etablissement(contrevenants, query)
     return render_template('resultat.html', contrevenants=filter_contrevenants)
 
@@ -120,9 +117,8 @@ def recherche_etablissement():
 # Sert pour le moteur de recherche par propriétaire
 @app.route("/recherche-proprietaire", methods=["GET"])
 def recherche_proprietaire():
-    database = Database()
     query = request.args.get('proprietaire').lower()
-    contrevenants = database.get_all_contrevenants()
+    contrevenants = get_db().get_all_contrevenants()
     filter_contrevenants = _filter_contrevenants_proprietaire(contrevenants, query)
     return render_template('resultat.html', contrevenants=filter_contrevenants)
 
@@ -130,9 +126,8 @@ def recherche_proprietaire():
 # Sert pour le moteur de recherche par adresse
 @app.route("/recherche-adresse", methods=["GET"])
 def recherche_adresse():
-    database = Database()
     query = request.args.get('adresse').lower()
-    contrevenants = database.get_all_contrevenants()
+    contrevenants = get_db().get_all_contrevenants()
     filter_contrevenants = _filter_contrevenants_adresse(contrevenants, query)
     return render_template('resultat.html', contrevenants=filter_contrevenants)
 
@@ -146,27 +141,23 @@ def get_doc():
 # Sert au service REST permettant d'obtenir la liste des contrevenants ayant commis une infraction entre deux dates
 @app.route("/api/contrevenants", methods=['GET'])
 def get_contrevenant():
-    database = Database()
-    contrevenants = database.get_all_contrevenants()
+    contrevenants = get_db().get_all_contrevenants()
     start_date = request.args.get('du')
     end_date = request.args.get('au')
 
     if not start_date:
         response = {'error': "Paramètre 'du' manquant."}
-        return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
-                                  mimetype='application/json; charset=utf-8')
+        return jsonify(response), 400
     if not end_date:
         response = {'error': "Paramètre 'au' manquant."}
-        return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
-                                  mimetype='application/json; charset=utf-8')
+        return jsonify(response), 400
 
     try:
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
         end_date = datetime.strptime(end_date, '%Y-%m-%d')
     except ValueError:
         response = {'error': 'Format de date invalide. Utilisez le format ISO 8601 (AAAA-MM-JJ).'}
-        return app.response_class(json.dumps(response, ensure_ascii=False), status=400,
-                                  mimetype='application/json; charset=utf-8')
+        return jsonify(response), 400
 
     filter_contrevenants = [c for c in contrevenants if
                             start_date <= datetime.strptime(c['date_infraction'], '%Y-%m-%d') <= end_date]
@@ -179,8 +170,7 @@ def get_contrevenant():
 def recherche_date():
     query_du = request.args.get("date-du")
     query_au = request.args.get("date-au")
-    database = Database()
-    contrevenants = database.get_all_contrevenants()
+    contrevenants = get_db().get_all_contrevenants()
 
     if not query_du:
         response = {'error': "Paramètre 'du' manquant."}
@@ -192,7 +182,6 @@ def recherche_date():
     filter_contrevenants = _filter_contrevenants_date(contrevenants, query_du, query_au)
 
     response = jsonify(filter_contrevenants)
-    response.headers.add('Content-Type', 'application/json; charset=utf-8')
 
     return response, 200
 
@@ -207,7 +196,7 @@ def create_user():
     email = json_data['adresse_courriel']
     etablissements = ','.join(json_data['etablissements'])
     password = json_data['mot_de_passe']
-    db = Database
+    db = Database()
 
     try:
         data, errors = UserSchema().load(json_data)
@@ -219,8 +208,8 @@ def create_user():
             else:
                 salt = uuid.uuid4().hex
                 hashed_password = hashlib.sha512(str(password + salt).encode("utf-8")).hexdigest()
-                user_id = db.create_user(Database, nom_user, prenom_user, email, salt, hashed_password)
-                db.create_request(Database, user_id, etablissements)
+                user_id = db.create_user(nom_user, prenom_user, email, salt, hashed_password)
+                db.create_request(user_id, etablissements)
                 db.commit()
                 db.close()
             return jsonify({'message': 'Profil utilisateur créé avec succès'}), 201
@@ -228,15 +217,33 @@ def create_user():
         return {"status": "error", "message": "Validation failed", "errors": str(e)}, 422
 
 
-@app.route('/api/get-etablissements', methods=['GET'])
-def get_etablissements():
-    database = Database()
-    ordered_contrevenants = database.get_list_contrevenants()
-
+# Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant (json)
+@app.route('/api/get-etablissements-by-infractions-json', methods=['GET'])
+def get_etablissements_by_infractions_json():
+    ordered_contrevenants = get_db().get_list_contrevenants()
     response = jsonify(ordered_contrevenants)
-    response.headers.add('Content-Type', 'application/json; charset=utf-8')
 
     return response, 200
+
+
+# Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant (XML)
+@app.route('/api/get-etablissements-by-infractions-xml', methods=['GET'])
+def get_etablissements_xml():
+    try:
+        ordered_contrevenants = get_db().get_list_contrevenants()
+        root = ET.Element("ordered_contrevenants")
+
+        for contrevenant in ordered_contrevenants:
+            contrevenant_elem = ET.SubElement(root, "contrevenant")
+            ET.SubElement(contrevenant_elem, "établissement").text = contrevenant[0]
+            ET.SubElement(contrevenant_elem, "nb_infractions").text = str(contrevenant[1])
+
+        xml_string = ET.tostring(root, encoding='utf-8', method='xml')
+        return xml_string, 200
+
+    except Exception as e:
+        return jsonify(
+            {'error': 'Erreur lors de la connexion à la base de données'}), 500
 
 
 # Sert à filtrer les contraventions par nom d'établissement

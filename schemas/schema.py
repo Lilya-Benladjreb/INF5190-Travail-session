@@ -6,7 +6,6 @@
 
 from .common import ma
 from marshmallow import fields, validate
-from datetime import datetime
 
 
 class UserSchema(ma.Schema):
