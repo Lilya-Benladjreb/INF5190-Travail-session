@@ -139,10 +139,16 @@ Aller à la route suivante sur le fureteur pour voir le résultat en format xml.
 ```
 ### C3 5xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté
 
 Le système offre un service permettant d'obtenir exactement les mêmes données que le point C1 mais en format CSV. L'encodage de caractères doit être UTF-8. Le service doit être documenté avec RAML
 sur /doc.
+
+#### Pour le tester
+Aller à la route suivante sur le fureteur, qui téléchargera un fichier csv automatiquement.
+```
+/api/get-etablissements-by-infractions-csv
+```
 
 ### D1 15xp
 

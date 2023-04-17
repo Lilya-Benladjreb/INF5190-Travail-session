@@ -17,12 +17,14 @@ import requests
 import csv
 import sqlite3
 import xml.etree.ElementTree as ET
-from flask import Flask, render_template, g, request, jsonify
+from flask import Flask, render_template, g, request, jsonify, Response
 from database import Database
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from schemas.common import schema
 from schemas.schema import formulaire_profil_utilisateur, UserSchema
+from io import StringIO
+
 
 app = Flask(__name__, static_url_path="", static_folder="static")
 app.config['JSON_AS_ASCII'] = False
@@ -245,6 +247,26 @@ def get_etablissements_xml():
     except Exception as e:
         return jsonify(
             {'error': 'Erreur lors de la connexion à la base de données', 'details': str(e)}), 500
+
+
+# Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant (CSV)
+@app.route('/api/get-etablissements-by-infractions-csv', methods=['GET'])
+def get_etablissements_by_infractions_csv():
+    ordered_contrevenants = get_db().get_list_contrevenants()
+
+    csv_data = StringIO()
+    fieldnames = ['etablissement', 'nb_infractions']
+    writer = csv.DictWriter(csv_data, fieldnames=fieldnames)
+
+    # Écrire CSV data dans le StringIO object
+    writer.writeheader()
+    for contrevenant in ordered_contrevenants:
+        writer.writerow(contrevenant)
+
+    # Retourner le CSV data en reponse Flask
+    response = Response(csv_data.getvalue(), mimetype='text/csv')
+    response.headers.set('Content-Disposition', 'attachment', filename='contrevenants.csv')
+    return response, 200
 
 
 # Sert à filtrer les contraventions par nom d'établissement
