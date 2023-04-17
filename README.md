@@ -128,10 +128,15 @@ Aller à la route suivante sur le fureteur pour voir le résultat en format json
 
 ### C2 5xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté
 
 Le système offre un service permettant d'obtenir exactement les mêmes données que le point C1 mais en format XML. L'encodage de caractères doit être UTF-8. Le service doit être documenté avec RAML sur /doc.
 
+#### Pour le tester
+Aller à la route suivante sur le fureteur pour voir le résultat en format xml.
+```
+/api/get-etablissements-by-infractions-xml
+```
 ### C3 5xp
 
 #### Implémenté / Non-implémenté

@@ -230,20 +230,21 @@ def get_etablissements_by_infractions_json():
 @app.route('/api/get-etablissements-by-infractions-xml', methods=['GET'])
 def get_etablissements_xml():
     try:
-        ordered_contrevenants = get_db().get_list_contrevenants()
-        root = ET.Element("ordered_contrevenants")
+        contrevenants = get_db().get_list_contrevenants()
+        root = ET.Element('contrevenants')
+        for contrevenant in contrevenants:
+            child = ET.SubElement(root, 'établissement')
+            for info in contrevenant.items():
+                sub_child = ET.SubElement(child, 'nb_infractions')
+                sub_child.text = str(info)
 
-        for contrevenant in ordered_contrevenants:
-            contrevenant_elem = ET.SubElement(root, "contrevenant")
-            ET.SubElement(contrevenant_elem, "établissement").text = contrevenant[0]
-            ET.SubElement(contrevenant_elem, "nb_infractions").text = str(contrevenant[1])
+        xml_string = ET.tostring(root, encoding='utf8', method='xml')
 
-        xml_string = ET.tostring(root, encoding='utf-8', method='xml')
-        return xml_string, 200
+        return xml_string.decode(), 200
 
     except Exception as e:
         return jsonify(
-            {'error': 'Erreur lors de la connexion à la base de données'}), 500
+            {'error': 'Erreur lors de la connexion à la base de données', 'details': str(e)}), 500
 
 
 # Sert à filtrer les contraventions par nom d'établissement
