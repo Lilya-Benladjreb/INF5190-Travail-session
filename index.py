@@ -12,10 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import hashlib
+import smtplib
+import ssl
 import uuid
 import requests
 import csv
 import sqlite3
+import yaml
 import xml.etree.ElementTree as ET
 from flask import Flask, render_template, g, request, jsonify, Response
 from database import Database
@@ -24,7 +27,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from schemas.common import schema
 from schemas.schema import formulaire_profil_utilisateur, UserSchema
 from io import StringIO
-
 
 app = Flask(__name__, static_url_path="", static_folder="static")
 app.config['JSON_AS_ASCII'] = False
@@ -45,42 +47,70 @@ def update_database():
     url = INFRACTION_URL
     response = requests.get(url)
     data = response.content.decode('utf-8')
-    csv_reader = csv.DictReader(data.splitlines())
-    contrevenants = [dict(row) for row in csv_reader]
-    conn = sqlite3.connect('db/db.db')
-    cursor = conn.cursor()
-    for contrevenant in contrevenants:
-        # Vérifier si la ligne existe déjà dans la base de données avant de l'insérer
-        cursor.execute("SELECT * FROM contrevenants WHERE id_poursuite = ?", (contrevenant[0],))
-        existing_row = cursor.fetchone()
-        if existing_row is None:
-            cursor.execute("\n"
-                           "                INSERT INTO contrevenants (\n"
-                           "                    id_poursuite,\n"
-                           "                    business_id,\n"
-                           "                    etablissement,\n"
-                           "                    categorie,\n"
-                           "                    adresse,\n"
-                           "                    description,\n"
-                           "                    proprietaire,\n"
-                           "                    date_infraction,\n"
-                           "                    date_jugement,\n"
-                           "                    montant\n"
-                           "                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n"
-                           "            ", (
-                               contrevenant['id_poursuite'],
-                               contrevenant['business_id'],
-                               contrevenant['etablissement'],
-                               contrevenant['categorie'],
-                               contrevenant['adresse'],
-                               contrevenant['description'],
-                               contrevenant['proprietaire'],
-                               contrevenant['date'],
-                               contrevenant['date_jugement'],
-                               contrevenant['montant']
-                           ))
-    conn.commit()
-    conn.close()
+    rows = csv.reader(data.splitlines())
+    next(rows)
+    with sqlite3.connect('db/db.db') as conn:
+        liste_nouveaux_contrevenants = []
+        contrevenants = [dict(row) for row in rows]
+        cursor = conn.cursor()
+        for contrevenant in contrevenants:
+            # Vérifier si la ligne existe déjà dans la base de données avant de l'insérer
+            cursor.execute("SELECT * FROM contrevenants WHERE id_poursuite = ?", (contrevenant[0],))
+            existing_row = cursor.fetchone()
+            if existing_row is None:
+                cursor.execute("\n"
+                               "                INSERT INTO contrevenants (\n"
+                               "                    id_poursuite,\n"
+                               "                    business_id,\n"
+                               "                    etablissement,\n"
+                               "                    categorie,\n"
+                               "                    adresse,\n"
+                               "                    description,\n"
+                               "                    proprietaire,\n"
+                               "                    date_infraction,\n"
+                               "                    date_jugement,\n"
+                               "                    montant\n"
+                               "                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n"
+                               "            ", (
+                                   contrevenant['id_poursuite'],
+                                   contrevenant['business_id'],
+                                   contrevenant['etablissement'],
+                                   contrevenant['categorie'],
+                                   contrevenant['adresse'],
+                                   contrevenant['description'],
+                                   contrevenant['proprietaire'],
+                                   contrevenant['date'],
+                                   contrevenant['date_jugement'],
+                                   contrevenant['montant']
+                               ))
+                liste_nouveaux_contrevenants.append(cursor.lastrowid())
+        conn.commit()
+        conn.close()
+    creer_liste_nouveaux_changements(liste_nouveaux_contrevenants)
+
+
+# Sert à lister les changements fait lorsqu'il y a des mises à jours au fichier csv de la ville
+def creer_liste_nouveaux_changements(liste_des_nouveaux_id):
+    for new_id in liste_des_nouveaux_id:
+        new_data = get_db().get_list_new_contrevenants(new_id).append()
+        return new_data
+
+
+def envoyer_liste_de_changements(liste_new_data):
+    with open("config.yaml", "r") as f:
+        config = yaml.safe_load(f)
+        receiver_email = config["email"]
+
+    if liste_new_data:
+        sender_email = "lilyatest28@gmail.com"  # Replacer par sender email
+        password = "Neo283417!!"  # Replace par actual sender email password
+        subject = "Derniers ajouts aux données ouvertes - Violations.csv"
+        body = "\n".join([", ".join(row) for row in liste_new_data])
+        message = f"Subject: {subject}\n\n{body}"
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, message)
 
 
 # Configuration du BackgroundScheduler pour exécuter la fonction update_database() chaque jour à minuit
@@ -89,11 +119,16 @@ scheduler.add_job(func=update_database, trigger="cron", hour=0, minute=0)
 scheduler.start()
 
 
+# Ce qui doit être arreté lorsque l'application Flask s'arrête
 @app.teardown_appcontext
 def close_connection(exception):
+    # Déconnection à la BD
     db = getattr(g, '_database', None)
     if db is not None:
         db.disconnect()
+    # Arrêt du background scheduler
+    scheduler.shutdown()
+
 
 
 @app.route("/", methods=["GET"])

@@ -35,7 +35,7 @@ class Database:
     def create_user(self, nom_user, prenom_user, email, salt, hash):
         cursor = self.get_connection().cursor()
         query = "insert into users(nom_user, prenom_user, email, salt, hash) values(?, ?, ?, ?, ?)",\
-                (nom_user, prenom_user,email, salt, hash)
+                (nom_user, prenom_user, email, salt, hash)
         cursor.execute(query)
         return cursor.lastrowid
 
@@ -51,4 +51,10 @@ class Database:
         query = "select etablissement, count(id_poursuite) as nb_infractions from contrevenants " \
                 "group by etablissement order by nb_infractions desc "
         cursor.execute(query)
+        return [dict(row) for row in cursor.fetchall()]
+
+    def get_list_new_contrevenants(self, new_id):
+        cursor = self.get_connection().cursor()
+        query = "select * from contrevenants where id = ?"
+        cursor.execute(query, (new_id,))
         return [dict(row) for row in cursor.fetchall()]
