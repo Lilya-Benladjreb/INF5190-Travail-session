@@ -93,7 +93,8 @@ def update_database():
 def creer_liste_nouveaux_changements(liste_des_nouveaux_id):
     for new_id in liste_des_nouveaux_id:
         new_data = get_db().get_list_new_contrevenants(new_id).append()
-        return new_data
+
+    envoyer_liste_de_changements(new_data)
 
 
 def envoyer_liste_de_changements(liste_new_data):
@@ -126,9 +127,6 @@ def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.disconnect()
-    # Arrêt du background scheduler
-    scheduler.shutdown()
-
 
 
 @app.route("/", methods=["GET"])
@@ -268,16 +266,7 @@ def get_etablissements_by_infractions_json():
 def get_etablissements_xml():
     try:
         contrevenants = get_db().get_list_contrevenants()
-        root = ET.Element('contrevenants')
-        for contrevenant in contrevenants:
-            child = ET.SubElement(root, 'établissement')
-            for info in contrevenant.items():
-                sub_child = ET.SubElement(child, 'nb_infractions')
-                sub_child.text = str(info)
-
-        xml_string = ET.tostring(root, encoding='utf8', method='xml')
-
-        return xml_string.decode(), 200
+        return render_template('etablissement-par-contraventions.xml', contrevenants=contrevenants), 200
 
     except Exception as e:
         return jsonify(

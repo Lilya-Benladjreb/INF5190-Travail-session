@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contrevenants>
+    {% for contrevenant in contrevenants %}
+        <établissement>
+            <nom_etablissement>{{ contrevenant['etablissement'] }}</nom_etablissement>
+            <nb_poursuite>{{ contrevenant['nb_infractions'] }}</nb_poursuite>
+        </établissement>
+    {% endfor %}
+</contrevenants>
