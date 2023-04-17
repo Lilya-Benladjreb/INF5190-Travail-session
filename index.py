@@ -19,7 +19,6 @@ import requests
 import csv
 import sqlite3
 import yaml
-import xml.etree.ElementTree as ET
 from flask import Flask, render_template, g, request, jsonify, Response
 from database import Database
 from datetime import datetime
@@ -86,18 +85,22 @@ def update_database():
                 liste_nouveaux_contrevenants.append(cursor.lastrowid())
         conn.commit()
         conn.close()
-    creer_liste_nouveaux_changements(liste_nouveaux_contrevenants)
+    return liste_nouveaux_contrevenants
 
 
-# Sert à lister les changements fait lorsqu'il y a des mises à jours au fichier csv de la ville
-def creer_liste_nouveaux_changements(liste_des_nouveaux_id):
+# Sert à lister les changements lorsqu'il y a des mises à jour au fichier csv de la ville
+def creer_liste_nouveaux_changements():
+    liste_des_nouveaux_id = update_database()
+
     for new_id in liste_des_nouveaux_id:
         new_data = get_db().get_list_new_contrevenants(new_id).append()
 
-    envoyer_liste_de_changements(new_data)
+    result = new_data
+    return result
 
 
-def envoyer_liste_de_changements(liste_new_data):
+def envoyer_liste_de_changements():
+    liste_new_data = creer_liste_nouveaux_changements()
     with open("config.yaml", "r") as f:
         config = yaml.safe_load(f)
         receiver_email = config["email"]
@@ -127,6 +130,8 @@ def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.disconnect()
+    # Arrêt scheduler
+    scheduler.shutdown()
 
 
 @app.route("/", methods=["GET"])
@@ -198,27 +203,6 @@ def get_contrevenant():
                             start_date <= datetime.strptime(c['date_infraction'], '%Y-%m-%d') <= end_date]
 
     return jsonify(filter_contrevenants), 200
-
-
-# Sert à la requête Ajax permettant de saisir deux dates. Affiche la liste des contrevenants dans un tableau.
-@app.route("/recherche-date", methods=["GET"])
-def recherche_date():
-    query_du = request.args.get("date-du")
-    query_au = request.args.get("date-au")
-    contrevenants = get_db().get_all_contrevenants()
-
-    if not query_du:
-        response = {'error': "Paramètre 'du' manquant."}
-        return response, 400
-    if not query_au:
-        response = {'error': "Paramètre 'au' manquant."}
-        return response, 400
-
-    filter_contrevenants = _filter_contrevenants_date(contrevenants, query_du, query_au)
-
-    response = jsonify(filter_contrevenants)
-
-    return response, 200
 
 
 # Sert à créer un nouvel utilisateur dans la BD

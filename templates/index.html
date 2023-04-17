@@ -21,24 +21,21 @@
 
         <div class="form-ajax">
             Pour une recherche sous forme de date
-            <form method="get" name="search-by-date" action="/recherche-date" onsubmit="rechercheAjaxFetch(); return false;"  class="recherche">
-                <label for="date-du">Du</label>
+            <form method="get" name="search-by-date" action="/api/contrevenants" class="recherche">
+                <label for="du">Du</label>
                 <br>
-                <input type="date" id="date-du" name="date-du">
-                <p id="date-du-err"></p>
+                <input type="date" id="du" name="du" required>
                 <br>
-                <label for="date-au">Au</label>
+                <label for="au">Au</label>
                 <br>
-                <input type="date" id="date-au" name="date-au">
-                <p id="date-au-err"></p>
+                <input type="date" id="au" name="au" required>
                 <br>
                 <input type="submit" value="Soumettre">
             </form>
         </div>
 
-        <div class="results-body">
-            <table class="results-body></table>
-        </div>
+        <table id="contrevenants-table" class="table">
+        </table>
 
     </div>
 {% endblock %}

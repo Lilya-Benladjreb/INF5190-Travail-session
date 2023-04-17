@@ -75,11 +75,11 @@ Ex. GET /contrevenants?du=2020-05-08&au=2022-05-15
 
 Une route /doc doit être disponible et afficher la représentation HTML de la documentation RAML du service web.
 
-#### Pour le tester *** à changer lorsque déployé *** 
+#### Pour le tester 
 
 Aller sur le terminal et utiliser curl -v suivi de la route désirée. Le résultat s'affichera sur le terminal. 
 ````
-curl -v http://127.0.0.1:5000/api/contrevenants\?du\=2020-05-08\&au\=2022-05-15
+curl -v http://127.0.0.1:5000/api/contrevenants\?date-du\=2020-05-08\&date-au\=2022-05-15
 ````
 ### A5 10xp
 
