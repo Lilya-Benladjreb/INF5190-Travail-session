@@ -36,6 +36,30 @@
 
         <table id="contrevenants-table" class="table">
         </table>
-
     </div>
+
+    <form id="formulaire-plainte" method="post">
+      <label for="etablissement">Restaurant:</label>
+      <input type="text" id="etablissement" name="etablissement" required><br>
+
+      <label for="adresse">Adresse:</label>
+      <input type="text" id="adresse" name="adresse" required><br>
+
+      <label for="ville">Ville:</label>
+      <input type="text" id="ville" name="ville" required><br>
+
+      <label for="date-visite">Date de la visite:</label>
+      <input type="date" id="date-visite" name="date-visite" required><br>
+
+      <label for="nom-user">Votre nom:</label>
+      <input type="text" id="nom-user" name="nom-user" required><br>
+
+      <label for="prenom-user">Votre prénom:</label>
+      <input type="text" id="prenom-user" name="prenom-user" required><br>
+
+      <label for="description-problem">Problem Description:</label>
+      <textarea id="description-problem" name="description-problem" required></textarea><br>
+
+      <button type="submit">Submit</button>
+    </form>
 {% endblock %}

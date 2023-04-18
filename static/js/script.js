@@ -24,3 +24,39 @@ $(document).ready(function() {
     });
   });
 });
+
+function submitFormPlainte() {
+  const form = document.getElementById('formulaire-plainte');
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const complaintData = {
+          etablissement: formData.get('etablissement'),
+          adresse: formData.get('adresse'),
+          ville: formData.get('ville'),
+          dateVisite: formData.get('date-visite'),
+          nom_user: formData.get('nom_user'),
+          prenom_user: formData.get('prenom_user'),
+          descriptionProblem: formData.get('description-problem')
+        };
+
+        fetch('/api/post-inspection', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(complaintData)
+        })
+        .then(response => {
+          if (response.ok) {
+            alert('{"message": "Demande d\'inspection effectuée avec succès"}');
+          } else {
+            alert('{"erreur": "Un problème est survenue avec la demande"}');
+          }
+        })
+        .catch(error => {
+          alert('{"erreur": "Un problème est survenue avec la demande"}');
+        });
+      });
+}
