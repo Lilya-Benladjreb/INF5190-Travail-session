@@ -24,7 +24,10 @@ from database import Database
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from schemas.common import schema
-from schemas.schema import formulaire_profil_utilisateur, UserSchema
+from schemas.schema import formulaire_profil_utilisateur
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
+
 from io import StringIO
 
 app = Flask(__name__, static_url_path="", static_folder="static")
@@ -207,33 +210,28 @@ def get_contrevenant():
 
 # Sert à créer un nouvel utilisateur dans la BD
 @app.route('/api/post-user', methods=['POST'])
-@schema.validate(formulaire_profil_utilisateur)
 def create_user():
     json_data = request.get_json()
+
+    try:
+        validate(instance=json_data, schema=formulaire_profil_utilisateur)
+    except Exception as e:
+        return {"status": "error", "message": "Validation failed", "errors": str(e)}, 422
+
     nom_user = json_data['nom_user']
     prenom_user = json_data['prenom_user']
     email = json_data['adresse_courriel']
     etablissements = ','.join(json_data['etablissements'])
     password = json_data['mot_de_passe']
-    db = Database()
 
-    try:
-        data, errors = UserSchema().load(json_data)
-        if errors:
-            return {"status": "error", "message": "Validation échoué", "errors": errors}, 422
-        else:
-            if nom_user == "" or prenom_user == "" or password == "" or email == "" or etablissements == "":
-                return jsonify({'error': 'svp remplir tous les champs demandés'}), 400
-            else:
-                salt = uuid.uuid4().hex
-                hashed_password = hashlib.sha512(str(password + salt).encode("utf-8")).hexdigest()
-                user_id = db.create_user(nom_user, prenom_user, email, salt, hashed_password)
-                db.create_request(user_id, etablissements)
-                db.commit()
-                db.close()
-            return jsonify({'message': 'Profil utilisateur créé avec succès'}), 201
-    except Exception as e:
-        return {"status": "error", "message": "Validation failed", "errors": str(e)}, 422
+    if nom_user == "" or prenom_user == "" or password == "" or email == "" or etablissements == "":
+        return jsonify({'error': 'svp remplir tous les champs demandés'}), 400
+    else:
+        salt = uuid.uuid4().hex
+        hashed_password = hashlib.sha512(str(password + salt).encode("utf-8")).hexdigest()
+        user_id = get_db().create_user(nom_user, prenom_user, email, salt, hashed_password)
+        get_db().create_request(user_id, etablissements)
+    return jsonify({'message': 'Profil utilisateur créé avec succès'}), 201
 
 
 # Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant (json)

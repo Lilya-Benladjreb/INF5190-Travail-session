@@ -19,12 +19,11 @@ CREATE TABLE users (
     adresse_courriel varchar(100),
     id_request varchar(255),
     salt varchar(32),
-    hash varchar(128),
-    FOREIGN KEY (id_request) references requests(id_request)
+    hash varchar(128)
 );
 
 CREATE TABLE requests(
     id_request INTEGER PRIMARY KEY,
     id_user INTEGER,
-    etablissement varchar(100)
+    etablissements varchar(255)
 );

@@ -7,24 +7,6 @@
 from .common import ma
 from marshmallow import fields, validate
 
-
-class UserSchema(ma.Schema):
-    nom_user = fields.String(required=True)
-    prenom_user = fields.String(required=True)
-    adresse_courriel = fields.Email(required=True)
-    etablissements = fields.List(fields.String(), required=True)
-    mot_de_passe = fields.String(required=True, validate=validate.Length(min=8))
-
-    class Meta:
-        fields = (
-            'nom_user',
-            'prenom_user',
-            'adresse_courriel',
-            'etablissements',
-            'mot_de_passe'
-        )
-
-
 formulaire_profil_utilisateur = {
     "type": "object",
     "properties": {
@@ -36,5 +18,4 @@ formulaire_profil_utilisateur = {
     },
     "required": ["nom_user", "prenom_user", "adresse_courriel", "etablissements", "mot_de_passe"],
     "additionalProperties": False
-
 }

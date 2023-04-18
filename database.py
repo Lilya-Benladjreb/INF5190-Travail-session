@@ -33,23 +33,25 @@ class Database:
 
     # Permet de créer un nouvel utilisateur dns la bd
     def create_user(self, nom_user, prenom_user, email, salt, hash):
-        cursor = self.get_connection().cursor()
-        query = "insert into users(nom_user, prenom_user, email, salt, hash) values(?, ?, ?, ?, ?)",\
-                (nom_user, prenom_user, email, salt, hash)
-        cursor.execute(query)
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute(("insert into users (nom_user, prenom_user, adresse_courriel, salt, hash) " \
+                        "values(?, ?, ?, ?, ?)"), (nom_user, prenom_user, email, salt, hash))
+        conn.commit()
         return cursor.lastrowid
 
     # Permet de dresser une liste d'établissements par utilisateur (user peut donc créer plusieurs listes à son nom"
     def create_request(self, user_id, etablissements):
-        cursor = self.get_connection().cursor()
-        query = "insert into requests (user_id, establishments) values (?, ?)", (user_id, etablissements)
-        cursor.execute(query)
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute(("insert into requests (id_user, etablissements) values (?, ?)"), (user_id, etablissements))
+        conn.commit()
 
     # Permet de dresser une liste d'établissements qui indique leur nom et nombre de contraventions recues
     def get_list_contrevenants(self):
         cursor = self.get_connection().cursor()
-        query = "select etablissement, count(id_poursuite) as nb_infractions from contrevenants " \
-                "group by etablissement order by nb_infractions desc "
+        query = ("select etablissement, count(id_poursuite) as nb_infractions from contrevenants " \
+                 "group by etablissement order by nb_infractions desc ")
         cursor.execute(query)
         return [dict(row) for row in cursor.fetchall()]
 
