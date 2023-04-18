@@ -44,7 +44,7 @@ class Database:
     def create_request(self, user_id, etablissements):
         conn = self.get_connection()
         cursor = conn.cursor()
-        cursor.execute(("insert into requests (id_user, etablissements) values (?, ?)"), (user_id, etablissements))
+        cursor.execute(("insert into follow_requests (id_user, etablissements) values (?, ?)"), (user_id, etablissements))
         conn.commit()
 
     # Permet de dresser une liste d'établissements qui indique leur nom et nombre de contraventions recues
@@ -55,8 +55,19 @@ class Database:
         cursor.execute(query)
         return [dict(row) for row in cursor.fetchall()]
 
+    # Permet de dresser une liste des mises à jour
     def get_list_new_contrevenants(self, new_id):
         cursor = self.get_connection().cursor()
         query = "select * from contrevenants where id = ?"
         cursor.execute(query, (new_id,))
         return [dict(row) for row in cursor.fetchall()]
+
+    # Permet de créer une nouvelle demande d'inspection
+    def post_inspection(self, etablissement, adresse, ville, date_visite, nom_user, prenom_user, problem):
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute(("insert into inspection_requests "
+                        "(etablissement, adresse, ville, date_visite, nom_user, prenom_user, description_problem) "
+                        "values (?, ?, ?, ?, ?, ?, ?)"),
+                       (etablissement, adresse, ville, date_visite, nom_user, prenom_user, problem))
+        conn.commit()

@@ -23,11 +23,8 @@ from flask import Flask, render_template, g, request, jsonify, Response
 from database import Database
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
-from schemas.common import schema
-from schemas.schema import formulaire_profil_utilisateur
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
-
+from schemas.schema import formulaire_profil_utilisateur, formulaire_demande_inspection
+from jsonschema import validate, ValidationError
 from io import StringIO
 
 app = Flask(__name__, static_url_path="", static_folder="static")
@@ -102,6 +99,7 @@ def creer_liste_nouveaux_changements():
     return result
 
 
+# Sert à créer l'email contenant les mises à jour de la BD
 def envoyer_liste_de_changements():
     liste_new_data = creer_liste_nouveaux_changements()
     with open("config.yaml", "r") as f:
@@ -126,7 +124,7 @@ scheduler.add_job(func=update_database, trigger="cron", hour=0, minute=0)
 scheduler.start()
 
 
-# Ce qui doit être arreté lorsque l'application Flask s'arrête
+# Ce qui doit être arrêté lorsque l'application Flask s'arrête
 @app.teardown_appcontext
 def close_connection(exception):
     # Déconnection à la BD
@@ -137,6 +135,7 @@ def close_connection(exception):
     scheduler.shutdown()
 
 
+# Route de base
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
@@ -269,10 +268,35 @@ def get_etablissements_by_infractions_csv():
     for contrevenant in ordered_contrevenants:
         writer.writerow(contrevenant)
 
-    # Retourner le CSV data en reponse Flask
+    # Retourner le CSV data en réponse Flask
     response = Response(csv_data.getvalue(), mimetype='text/csv')
     response.headers.set('Content-Disposition', 'attachment', filename='contrevenants.csv')
     return response, 200
+
+
+# Sert à offrir un service REST permettant de faire une demande d'inspection à la ville.
+@app.route("/api/post-inspection", methods=["POST"])
+def create_inspection_request():
+    json_data = request.get_json()
+    try:
+        validate(instance=json_data, schema=formulaire_demande_inspection)
+    except Exception as e:
+        return {"status": "error", "message": "Validation échouée", "errors": str(e)}, 422
+
+    etablissement = json_data['etablissement']
+    nom_user = json_data['nom_user']
+    prenom_user = json_data['prenom_user']
+    adresse = json_data['adresse']
+    ville = json_data['ville']
+    date_visite = json_data['date_visite']
+    probleme = json_data['description_problem']
+
+    if etablissement == "" or nom_user == "" or prenom_user == "" or adresse == "" \
+            or ville == "" or date_visite == "" or probleme == "":
+        return jsonify({'error': 'svp remplir tous les champs demandés'}), 400
+    else:
+        get_db().post_inspection(etablissement, adresse, ville, date_visite, nom_user, prenom_user, probleme)
+        return jsonify({"message": "Demande d'inspection effectuée avec succès"}), 201
 
 
 # Sert à filtrer les contraventions par nom d'établissement

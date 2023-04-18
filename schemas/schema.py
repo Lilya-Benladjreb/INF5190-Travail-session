@@ -4,9 +4,6 @@
 # Description: Classe permet l'implémentation des schemas dans le projet
 #
 
-from .common import ma
-from marshmallow import fields, validate
-
 formulaire_profil_utilisateur = {
     "type": "object",
     "properties": {
@@ -17,5 +14,21 @@ formulaire_profil_utilisateur = {
         "mot_de_passe": {"type": "string"}
     },
     "required": ["nom_user", "prenom_user", "adresse_courriel", "etablissements", "mot_de_passe"],
+    "additionalProperties": False
+}
+
+formulaire_demande_inspection = {
+    "type": "object",
+    "properties": {
+        "etablissement": {"type": "string"},
+        "adresse": {"type": "string"},
+        "ville": {"type": "string"},
+        "date_visite": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "nom_user": {"type": "string"},
+        "prenom_user": {"type": "string"},
+        "description_problem": {"type": "string"}
+    },
+    "required": ["etablissement", "adresse", "ville", "date_visite", "nom_user", "prenom_user",
+                 "description_problem"],
     "additionalProperties": False
 }

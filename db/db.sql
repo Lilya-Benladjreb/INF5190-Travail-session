@@ -17,13 +17,24 @@ CREATE TABLE users (
     nom_user varchar(50),
     prenom_user varchar(50),
     adresse_courriel varchar(100),
-    id_request varchar(255),
+    id_request varchar(255) REFERENCES follow_requests(id_request),
     salt varchar(32),
     hash varchar(128)
 );
 
-CREATE TABLE requests(
+CREATE TABLE follow_requests(
     id_request INTEGER PRIMARY KEY,
-    id_user INTEGER,
+    id_user INTEGER REFERENCES users(id),
     etablissements varchar(255)
+);
+
+CREATE TABLE inspection_requests(
+    id_inspection INTEGER PRIMARY KEY,
+    etablissement varchar(100) REFERENCES contrevenants(etablissement),
+    adresse varchar(100),
+    ville varchar(50),
+    date_visite varchar(10),
+    nom_user varchar(50),
+    prenom_user varchar(50),
+    description_problem varchar(255)
 );
