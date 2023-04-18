@@ -190,7 +190,7 @@ Le système offre une procédure d'authentification du type « Basic Auth » et 
 
 ### E1 15xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté 
 
 Le système offre un service REST permettant à un utilisateur de se créer un profil d'utilisateur. 
 
@@ -202,6 +202,19 @@ Le service reçoit un document JSON contenant :
 
 Le document JSON doit être validé avec json-schema. Le service doit être documenté avec RAML sur
 /doc.
+
+#### Pour le tester
+
+Faire un post en suivant l'exemple suivant :
+```
+{
+    "nom_user": "Doe",
+    "prenom_user": "John",
+    "adresse_courriel": "john.doe@example.com",
+    "etablissements": ["University of Paris", "Sorbonne University"],
+    "mot_de_passe": "password123"
+}
+```
 
 ### E2 15xp
 
