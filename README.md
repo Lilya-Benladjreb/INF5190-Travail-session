@@ -100,7 +100,7 @@ vous devez créer à cet effet. Lorsque la réponse Ajax revient, l'application 
 
 ### B1 5xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté
 
 Le système détecte les nouveaux contrevenants depuis la dernière importation de données, en dresse une liste sans doublon et l'envoi par courriel automatiquement. L'adresse du destinataire du courriel est stocké dans un fichier de configuration en format YAML.
 
@@ -152,7 +152,7 @@ Aller à la route suivante sur le fureteur, qui téléchargera un fichier csv au
 
 ### D1 15xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté
 
 Le système offre un service REST permettant de faire une demande d’inspection à la ville. Le document JSON doit être validé avec json-schema. Le service doit permettre de recevoir les données suivantes :
 
@@ -168,12 +168,26 @@ Le service doit être documenté avec RAML sur /doc.
 Ensuite, une page de plainte doit permettre à un visiteur sur le site web de faire une plainte à propos d’un restaurant. La page de plainte doit offrir un formulaire et la page doit invoquer le service REST de création d’une demande d’inspection. Indice : la requête doit être envoyée au backend par du
 Javascript.
 
+#### Pour le tester
+Remplir le formulaire qui indique une demande d'inspection pour un restaurant
+
 ### D2 5xp
 
-#### Implémenté / Non-implémenté
+#### Implémenté
 
 Le système offre un service REST permettant de supprimer une demande d’inspection. Le service doit
 être documenté avec RAML sur /doc.
+
+#### Pour le tester
+Envoyer une requête à la route http://127.0.0.1:5000/api/delete-inspection en suivant le modèle suivant: 
+```
+{
+  "etablissement": "SUBWAY",
+  "ville": "Montréal",
+  "nom_user": "Desneige",
+  "prenom_user": "Elsa"
+}
+```
 
 ### D3 15xp
 
@@ -279,4 +293,4 @@ Un document nommé "Évaluation de la qualité du logiciel" est disponible sur M
 
 ### Base de données
 
-Vous devez modéliser vous même votre base de données. Un répertoire doit être créé avec le nom « /db » et il doit contenir un script de création de tables avec le nom « db.sql ».
+Vous devez modéliser vous-même votre base de données. Un répertoire doit être créé avec le nom « /db » et il doit contenir un script de création de tables avec le nom « db.sql ».

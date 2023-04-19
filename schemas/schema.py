@@ -32,3 +32,15 @@ formulaire_demande_inspection = {
                  "description_problem"],
     "additionalProperties": False
 }
+
+formulaire_supprimer_inspection = {
+    "type": "object",
+    "properties": {
+        "etablissement": {"type": "string"},
+        "ville": {"type": "string"},
+        "nom_user": {"type": "string"},
+        "prenom_user": {"type": "string"},
+    },
+    "required": ["etablissement", "ville", "nom_user", "prenom_user"],
+    "additionalProperties": False
+}

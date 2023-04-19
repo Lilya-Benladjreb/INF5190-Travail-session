@@ -35,23 +35,29 @@ class Database:
     def create_user(self, nom_user, prenom_user, email, salt, hash):
         conn = self.get_connection()
         cursor = conn.cursor()
-        cursor.execute(("insert into users (nom_user, prenom_user, adresse_courriel, salt, hash) " \
-                        "values(?, ?, ?, ?, ?)"), (nom_user, prenom_user, email, salt, hash))
+        cursor.execute(("insert into users (nom_user, prenom_user,"
+                        " adresse_courriel, salt, hash) values(?, ?,"
+                        " ?, ?, ?)"),
+                       (nom_user, prenom_user, email, salt, hash))
         conn.commit()
         return cursor.lastrowid
 
-    # Permet de dresser une liste d'établissements par utilisateur (user peut donc créer plusieurs listes à son nom"
+    # Permet de dresser une liste d'établissements par utilisateur
+    # (user peut donc créer plusieurs listes à son nom"
     def create_request(self, user_id, etablissements):
         conn = self.get_connection()
         cursor = conn.cursor()
-        cursor.execute(("insert into follow_requests (id_user, etablissements) values (?, ?)"), (user_id, etablissements))
+        cursor.execute(("insert into follow_requests (id_user, etablissements)"
+                        " values (?, ?)"), (user_id, etablissements))
         conn.commit()
 
-    # Permet de dresser une liste d'établissements qui indique leur nom et nombre de contraventions recues
+    # Permet de dresser une liste d'établissements qui indique leur nom
+    # et nombre de contraventions recues
     def get_list_contrevenants(self):
         cursor = self.get_connection().cursor()
-        query = ("select etablissement, count(id_poursuite) as nb_infractions from contrevenants " \
-                 "group by etablissement order by nb_infractions desc ")
+        query = ("select etablissement, count(id_poursuite) as nb_infractions "
+                 "from contrevenants group by etablissement "
+                 "order by nb_infractions desc ")
         cursor.execute(query)
         return [dict(row) for row in cursor.fetchall()]
 
@@ -63,11 +69,24 @@ class Database:
         return [dict(row) for row in cursor.fetchall()]
 
     # Permet de créer une nouvelle demande d'inspection
-    def post_inspection(self, etablissement, adresse, ville, date_visite, nom_user, prenom_user, problem):
+    def post_inspection(self, etablissement, adresse, ville, date_visite,
+                        nom_user, prenom_user, problem):
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute(("insert into inspection_requests "
-                        "(etablissement, adresse, ville, date_visite, nom_user, prenom_user, description_problem) "
+                        "(etablissement, adresse, ville, date_visite,"
+                        " nom_user, prenom_user, description_problem) "
                         "values (?, ?, ?, ?, ?, ?, ?)"),
-                       (etablissement, adresse, ville, date_visite, nom_user, prenom_user, problem))
+                       (etablissement, adresse, ville, date_visite, nom_user,
+                        prenom_user, problem))
+        conn.commit()
+
+    # Permet de supprimer une demande d'inspection
+    def delete_inspection(self, etablissement, nom_user, prenom_user, ville):
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute(("delete from inspection_requests where nom_user = ? "
+                        "AND prenom_user = ? "
+                        "AND etablissement = ? AND ville = ?"),
+                       (nom_user, prenom_user, etablissement, ville))
         conn.commit()

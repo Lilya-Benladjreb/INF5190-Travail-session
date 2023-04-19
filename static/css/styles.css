@@ -106,10 +106,15 @@ button[type=submit] {
 }
   
 /* Style for the CSV data */
+.confirmation {
+    display: compact;
+    padding: 6%;
+}
+
 table {
     margin: 1rem;
     border-collapse: collapse;
-    width: 100%;
+    width: 95%;
 }
   
 th, td {
@@ -119,8 +124,9 @@ th, td {
 }
   
 th {
-    background-color: #333;
+    background-color: #5c4d48;
     color: #fff;
+    width: 25%;
 }
 
 /* Style pour liste d'anchor list*/
