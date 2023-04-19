@@ -24,40 +24,46 @@ footer {
 }
 
 /* Style pour navigation bar */
-nav {
+.navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
     background-color: #ede3da;
-
 }
 
-nav img {
+.navbar img {
     width: 20%;
 }
   
-nav ul {
+.navbar ul {
     display: flex;
     list-style: none;
 }
   
-nav ul li {
+.navbar ul li {
     margin-left: 1rem;
 }
   
-nav ul li:first-child {
+.navbar ul li:first-child {
     margin-left: 0;
 }
   
-nav a {
+.navbar a {
     font-size: 1em;
     color: #000000;
     text-decoration: none;
+    padding: 2%;
+    border-radius: 6px;
+}
+
+.navbar a:hover {
+    background-color: #5c4d48;
+    color: #cccccc;
 }
   
-/* Style pour search bar */
-.search {
+/* Style pour les forms */
+.search, .form-ajax, .form-api-post-inspection {
     padding: 2% ;
     margin: 1rem;
 }
@@ -66,7 +72,7 @@ nav a {
     margin-top: 5%;
 }
   
-.search input[type="text"] {
+.search input[type="text"]{
     width: 50%;
     margin-left: 25%;
     margin-bottom: 2%;
@@ -74,6 +80,29 @@ nav a {
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 16px;
+}
+
+.form-ajax input[type=date]
+, .form-api-post-inspection input[type=text]
+, .form-api-post-inspection input[type=date]
+, textarea {
+    width: 98%;
+    padding: 2%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    margin: 2%;
+    resize: vertical;
+}
+
+button[type=submit] {
+    background-color: #ede3da;
+    color: black;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
   
 /* Style for the CSV data */
@@ -93,4 +122,27 @@ th {
     background-color: #333;
     color: #fff;
 }
-  
+
+/* Style pour liste d'anchor list*/
+.anchor {
+    display: flex;
+    justify-content: center;
+}
+
+.anchor ul {
+  list-style-type: none;
+}
+
+.anchor li {
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.anchor a {
+  color: #333;
+  text-decoration: none;
+}
+
+.anchor a:hover {
+  text-decoration: underline;
+}

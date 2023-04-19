@@ -1,6 +1,13 @@
 {% extends "layout.html"%}
-{% block content%}
-    <div class="search">
+{% block content %}
+    <div class="anchor">
+        <ul>
+            <li><a href="#searchbar">Recherche par mot</a></li>
+            <li><a href="#searchbydate">Recherche par date</a></li>
+            <li><a href="#formplainte">Demande d'inspection</a></li>
+        </ul>
+    </div>
+    <div class="search" id="searchbar">
         <h2>Vous cherchez une contravention en particulier?</h2>
         <br>
         <p>Il est possible de faire une recherche avec le nom de l'établissement, le nom du propriétaire ou l'adresse.</p>
@@ -18,48 +25,61 @@
                 <input type="text" name="adresse" class="recherche" placeholder="Rechercher par adresse">
             </form>
         </div>
+    </div>
 
-        <div class="form-ajax">
-            Pour une recherche sous forme de date
+    <div class="form-ajax" id="searchbydate">
+        <h2>Pour une recherche sous forme de date</h2>
+        <br>
             <form method="get" name="search-by-date" action="/api/contrevenants" class="recherche">
-                <label for="du">Du</label>
+                <label for="du">Du:</label>
                 <br>
                 <input type="date" id="du" name="du" required>
                 <br>
-                <label for="au">Au</label>
+                <label for="au">Au:</label>
                 <br>
                 <input type="date" id="au" name="au" required>
                 <br>
-                <input type="submit" value="Soumettre">
+                <button type="submit">Soumettre</button>
             </form>
-        </div>
 
         <table id="contrevenants-table" class="table">
         </table>
     </div>
 
-    <form id="formulaire-plainte" method="post">
-      <label for="etablissement">Restaurant:</label>
-      <input type="text" id="etablissement" name="etablissement" required><br>
+    <div class="form-api-post-inspection" id="formplainte">
+        <h2>Pour faire une demande d'inspection pour un restaurant en particulier</h2>
+        <br>
+        <form id="formulaire-plainte" method="post" onsubmit="return submitFormPlainte()">
+            <label for="etablissement">Restaurant:</label>
+            <br>
+            <input type="text" id="etablissement" name="etablissement" required><br>
 
-      <label for="adresse">Adresse:</label>
-      <input type="text" id="adresse" name="adresse" required><br>
+            <label for="adresse">Adresse:</label>
+            <br>
+            <input type="text" id="adresse" name="adresse" required><br>
 
-      <label for="ville">Ville:</label>
-      <input type="text" id="ville" name="ville" required><br>
+            <label for="ville">Ville:</label>
+            <br>
+            <input type="text" id="ville" name="ville" required><br>
 
-      <label for="date-visite">Date de la visite:</label>
-      <input type="date" id="date-visite" name="date-visite" required><br>
+            <label for="date-visite">Date de la visite:</label>
+            <br>
+            <input type="date" id="date-visite" name="date-visite" required><br>
 
-      <label for="nom-user">Votre nom:</label>
-      <input type="text" id="nom-user" name="nom-user" required><br>
+            <label for="nom-user">Votre nom:</label>
+            <br>
+            <input type="text" id="nom-user" name="nom-user" required><br>
 
-      <label for="prenom-user">Votre prénom:</label>
-      <input type="text" id="prenom-user" name="prenom-user" required><br>
+            <label for="prenom-user">Votre prénom:</label>
+            <br>
+            <input type="text" id="prenom-user" name="prenom-user" required><br>
 
-      <label for="description-problem">Problem Description:</label>
-      <textarea id="description-problem" name="description-problem" required></textarea><br>
+            <label for="description-problem">Problem Description:</label>
+            <br>
+            <textarea id="description-problem" name="description-problem" required></textarea><br>
 
-      <button type="submit">Submit</button>
-    </form>
+            <button type="submit">Soumettre</button>
+        </form>
+    </div>
+
 {% endblock %}

@@ -131,8 +131,6 @@ def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.disconnect()
-    # Arrêt scheduler
-    scheduler.shutdown()
 
 
 # Route de base
