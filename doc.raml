@@ -1,8 +1,177 @@
 #%RAML 1.0
----
-title: INF5190 - Projet de Session
-baseUri: http://localhost:5000/api
+title: DATA - LilzFleur
 version: v1
-mediatype: application/json
+baseUri: http://127.0.0.1:5000/
+
 types:
+  Message:
+    properties:
+      message:
+        type: string
+        required: true
+
+  Error:
+    properties:
+      message:
+        type: string
+        required: true
+
+  formulaire_profil_utilisateur:
+    type: object
+    properties:
+      nom_user:
+        type: string
+      prenom_user:
+        type: string
+      adresse_courriel:
+        type: string
+      etablissements:
+        type: array
+        items: string
+      mot_de_passe:
+        type: string
+    required: [nom_user, prenom_user, adresse_courriel, etablissements, mot_de_passe]
+    additionalProperties: false
+
+  formulaire_demande_inspection:
+    type: object
+    properties:
+      etablissement:
+        type: string
+      adresse:
+        type: string
+      ville:
+        type: string
+      date_visite:
+        type: string
+        pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+      nom_user:
+        type: string
+      prenom_user:
+        type: string
+      description_problem:
+        type: string
+    required: [etablissement, adresse, ville, date_visite, nom_user, prenom_user, description_problem]
+    additionalProperties: false
+
+  formulaire_supprimer_inspection:
+    type: object
+    properties:
+      etablissement:
+        type: string
+      ville:
+        type: string
+      nom_user:
+        type: string
+      prenom_user:
+        type: string
+    required: [etablissement, ville, nom_user, prenom_user]
+    additionalProperties: false
+
+/api:
+  /contrevenants:
+    description: "Service REST permettant d'obtenir la liste des contrevenants ayant commis une infraction entre deux dates"
+    get:
+      description: "Obtenir la liste des contrevenants ayant commis une infraction entre deux dates"
+      queryParameters:
+        du:
+          description: "Date de début dans le format ISO 8601 (AAAA-MM-JJ)"
+          type: string
+          required: true
+        au:
+          description: "Date de fin dans le format ISO 8601 (AAAA-MM-JJ)"
+          type: string
+          required: true
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                [
+                  {
+                    "nom": "Dupont",
+                    "prenom": "Jean",
+                    "date_infraction": "2022-01-01",
+                    "montant_amende": 50
+                  },
+                  {
+                    "nom": "Martin",
+                    "prenom": "Pierre",
+                    "date_infraction": "2022-02-15",
+                    "montant_amende": 75
+                  }
+                ]
+        400:
+          body:
+            application/json:
+              example: |
+                {"error": "Paramètre 'du' manquant."}
+              description: "Un ou plusieurs paramètres obligatoires sont manquants"
+              type: object
+        400:
+          body:
+            application/json:
+              example: |
+                {"error": "Format de date invalide. Utilisez le format ISO 8601 (AAAA-MM-JJ)."}
+              description: "Le format de date est invalide"
+              type: object
+  /post-user:
+    description: "Sert à créer un nouvel utilisateur dans la BD"
+    post:
+        description: "Créer un nouvel utilisateur"
+    body:
+      application/json:
+        schema: formulaire_profil_utilisateur
+    responses:
+      201:
+        body:
+          application/json:
+            example: {"message": "Profil utilisateur créé avec succès"}
+      400:
+        body:
+          application/json:
+            example: {"error": "svp remplir tous les champs demandés"}
+    headers:
+      Content-Type:
+        example: "application/json"
+  /get-etablissements-by-infractions-json:
+  description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant (json)
+  get:
+    description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              [
+                {"etablissement": "Restaurant A", "nb_infractions": 10},
+                {"etablissement": "Bar B", "nb_infractions": 8},
+                {"etablissement": "Café C", "nb_infractions": 5}
+              ]
+      500:
+          body:
+            application/json:
+              example: {"error": "Erreur lors de la connexion à la base de données"}
+  /get-etablissements-by-infractions-xml:
+  description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant (xml)
+  get:
+    description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
+    responses:
+      200:
+        body:
+          application/xml:
+            example: |
+              <?xml version="1.0" encoding="UTF-8"?>
+              <contrevenants>
+                {% for contrevenant in contrevenants %}
+                  <etablissement>
+                    <nom_etablissement>{{ contrevenant.nom }}</nom_etablissement>
+                    <nb_infractions>{{ contrevenant.nb_infractions }}</nb_infractions>
+                    </etablissement>
+                  {% endfor %}
+              </contrevenants>
+      500:
+          body:
+            application/json:
+              example: {"error": "Erreur lors de la connexion à la base de données"}
 

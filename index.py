@@ -258,11 +258,14 @@ def create_user():
 # nombre d'infractions en ordre décroissant (json)
 @app.route('/api/get-etablissements-by-infractions-json', methods=['GET'])
 def get_etablissements_by_infractions_json():
-    ordered_contrevenants = get_db().get_list_contrevenants()
-    response = jsonify(ordered_contrevenants)
-
-    return response, 200
-
+    try:
+        ordered_contrevenants = get_db().get_list_contrevenants()
+        response = jsonify(ordered_contrevenants)
+        return response, 200
+    except Exception as e:
+        return jsonify(
+            {'error': 'Erreur lors de la connexion à la base de données',
+             'details': str(e)}), 500
 
 # Sert à recevoir la liste de tous les établissements ainsi que
 # leur nombre d'infractions en ordre décroissant (XML)
