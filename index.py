@@ -245,12 +245,14 @@ def create_user():
             or email == "" or etablissements == "":
         return jsonify({'error': 'svp remplir tous les champs demandés'}), 400
     else:
-        salt = uuid.uuid4().hex
-        hashed_password = \
-            hashlib.sha512(str(password + salt).encode("utf-8")).hexdigest()
-        user_id = get_db().create_user(nom_user, prenom_user,
-                                       email, salt, hashed_password)
-        get_db().create_request(user_id, etablissements)
+        if _valider_post_user(nom_user, prenom_user,
+                              email, etablissements) is True:
+            salt = uuid.uuid4().hex
+            hashed_password = \
+                hashlib.sha512(str(password + salt).encode("utf-8")).hexdigest()
+            user_id = get_db().create_user(nom_user, prenom_user,
+                                           email, salt, hashed_password)
+            get_db().create_request(user_id, etablissements)
     return jsonify({'message': 'Profil utilisateur créé avec succès'}), 201
 
 
@@ -335,10 +337,9 @@ def create_inspection_request():
             or probleme == "":
         return jsonify({'error': 'svp remplir tous les champs demandés'}), 400
     else:
-
-        if _valider_parameters(etablissement, nom_user,
-                               prenom_user, adresse,
-                               ville, probleme) is True:
+        if _valider_post_inspection(etablissement, nom_user,
+                                    prenom_user, adresse,
+                                    ville, probleme) is True:
             get_db().post_inspection(etablissement, adresse, ville,
                                      date_visite, nom_user, prenom_user,
                                      probleme)
@@ -363,16 +364,19 @@ def delete_inspection_request():
     prenom_user = json_data['prenom_user']
     ville = json_data['ville']
 
-    try:
-
-        if _valider_delete_inspection(etablissement, nom_user,
-                                      prenom_user, ville) is True:
-            get_db().delete_inspection(etablissement, nom_user,
-                                       prenom_user, ville)
-            return jsonify({"message": "Demande d'inspection supprimé"
-                                       " avec succès"}), 200
-    except Exception as e:
-        return jsonify({"error": "Suppression de la demande échouée"}), 500
+    if etablissement == "" or nom_user == "" or \
+            prenom_user == "" or ville == "":
+        return jsonify({'error': 'svp remplir tous les champs demandés'}), 400
+    else:
+        try:
+            if _valider_delete_inspection(etablissement, nom_user,
+                                          prenom_user, ville) is True:
+                get_db().delete_inspection(etablissement, nom_user,
+                                           prenom_user, ville)
+                return jsonify({"message": "Demande d'inspection supprimé"
+                                           " avec succès"}), 200
+        except Exception as e:
+            return jsonify({"error": "Suppression de la demande échouée"}), 500
 
 
 # Sert à filtrer les contraventions par nom d'établissement
@@ -416,8 +420,8 @@ def _filter_contrevenants_date(contrevenants, query_du, query_au):
 
 
 # Sert à valider les entrées qui seront mises dans la BD
-def _valider_parameters(etablissement, nom_user, prenom_user,
-                        adresse, ville, probleme):
+def _valider_post_inspection(etablissement, nom_user, prenom_user,
+                             adresse, ville, probleme):
     validated = True
 
     if len(etablissement) > 100:
@@ -437,7 +441,7 @@ def _valider_parameters(etablissement, nom_user, prenom_user,
         return jsonify({"error": "ville dépasse 50 caractères"}), 400
     elif len(probleme) > 255:
         validated = False
-        return jsonify({"error": "probleme dépasse de 255 caractères"}), 400
+        return jsonify({"error": "description_problem dépasse de 255 caractères"}), 400
     else:
         validated = True
 
@@ -446,7 +450,7 @@ def _valider_parameters(etablissement, nom_user, prenom_user,
 
 # Sert à valider les paramètres recu en Json pour la suppression
 def _valider_delete_inspection(etablissement, nom_user,
-                                      prenom_user, ville):
+                               prenom_user, ville):
     validated = True
     if len(etablissement) > 100:
         validated = False
@@ -460,6 +464,28 @@ def _valider_delete_inspection(etablissement, nom_user,
     elif len(ville) > 50:
         validated = False
         return jsonify({"error": "ville dépasse 50 caractères"}), 400
+    else:
+        validated = True
+
+    return validated
+
+
+# Sert à valider les params recu pour l'ajout d'un user
+def _valider_post_user(nom_user, prenom_user,
+                       email, etablissements):
+    validated = True
+    if len(etablissements) > 255:
+        validated = False
+        return jsonify({"error": "etablissements dépasse 255 caractères"}), 400
+    elif len(nom_user) > 50:
+        validated = False
+        return jsonify({"error": "nom_user dépasse 50 caractères"}), 400
+    elif len(prenom_user) > 50:
+        validated = False
+        return jsonify({"error": "prenom_user dépasse 50 caractères"}), 400
+    elif len(email) > 100:
+        validated = False
+        return jsonify({"error": "adresse_courriel dépasse 50 caractères"}), 400
     else:
         validated = True
 

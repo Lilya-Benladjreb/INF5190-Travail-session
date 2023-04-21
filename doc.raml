@@ -118,123 +118,133 @@ types:
         400:
           body:
             application/json:
-              example: |
-                {"error": "Paramètre 'du' manquant."}
-              description: "Un ou plusieurs paramètres obligatoires sont manquants"
-              type: object
-        400:
-          body:
-            application/json:
-              example: |
-                {"error": "Format de date invalide. Utilisez le format ISO 8601 (AAAA-MM-JJ)."}
-              description: "Le format de date est invalide"
-              type: object
+              examples: {
+                         "error": "Paramètre 'du' manquant."
+                         }
+  /get-etablissements-by-infractions-json:
+      description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant en json
+      get:
+        description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
+        responses:
+          200:
+            description: Successful response
+            body:
+              application/json:
+                example: |
+                  [
+                    {"etablissement": "Restaurant A", "nb_infractions": 10},
+                    {"etablissement": "Bar B", "nb_infractions": 8},
+                    {"etablissement": "Café C", "nb_infractions": 5}
+                  ]
+          500:
+            description: Error response
+            body:
+              application/json:
+                example: {
+                          "error": "Erreur lors de la connexion à la base de données",
+                          "details": "Error message details."
+                          }
+  /get-etablissements-by-infractions-xml:
+      description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant en xml
+      get:
+        description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
+        responses:
+          200:
+            description: Successful response
+            body:
+              application/xml:
+                example: |
+                  <contrevenants>
+                      <etablissement>
+                        <nom_etablissement> restaurant 1 </nom_etablissement>
+                        <nb_infractions> 33 </nb_infractions>
+                      </etablissement>
+                  </contrevenants>
+          500:
+            description: Error response
+            body:
+              application/json:
+                example: {
+                          "error": "Erreur lors de la connexion à la base de données",
+                          "details": "Error message details."
+                          }
+  /get-etablissements-by-infractions-csv:
+      description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant en csv
+      get:
+        description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
+        responses:
+          200:
+            body:
+              application/xml:
+                example: |
+                    etablissement,nb_infractions
+                    RESTAURANT 1,33
+                    RESTAURANT 2,30
+                    RESTAURANT 3,26
+          500:
+              body:
+                application/json:
+                  example: {
+                            "error": "Erreur lors de la connexion à la base de données",
+                            "details": "Error message details."
+                            }
   /post-user:
     description: "Sert à créer un nouvel utilisateur dans la BD"
     post:
         description: "Créer un nouvel utilisateur"
-    body:
-      application/json:
-        schema: formulaire_profil_utilisateur
-    responses:
-      201:
         body:
           application/json:
-            example: {"message": "Profil utilisateur créé avec succès"}
-      400:
-        body:
-          application/json:
-            example: {"error": "svp remplir tous les champs demandés"}
-    headers:
-      Content-Type:
-        example: "application/json"
-  /get-etablissements-by-infractions-json:
-  description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant en json
-  get:
-    description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
-    responses:
-      200:
-        description: Successful response
-        body:
-          application/json:
-            example: |
-              [
-                {"etablissement": "Restaurant A", "nb_infractions": 10},
-                {"etablissement": "Bar B", "nb_infractions": 8},
-                {"etablissement": "Café C", "nb_infractions": 5}
-              ]
-      500:
-        description: Error response
-        body:
-          application/json:
-            example: {
-                      "error": "Erreur lors de la connexion à la base de données",
-                      "details": "Error message details."
-                      }
-  /get-etablissements-by-infractions-xml:
-  description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant en xml
-  get:
-    description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
-    responses:
-      200:
-        description: Successful response
-        body:
-          application/xml:
-            example: |
-              <contrevenants>
-                {% for contrevenant in contrevenants %}
-                  <etablissement>
-                    <nom_etablissement>{{ contrevenant.nom }}</nom_etablissement>
-                    <nb_infractions>{{ contrevenant.nb_infractions }}</nb_infractions>
-                    </etablissement>
-                  {% endfor %}
-              </contrevenants>
-      500:
-        description: Error response
-        body:
-          application/json:
-            example: {
-                      "error": "Erreur lors de la connexion à la base de données",
-                      "details": "Error message details."
-                      }
-  /get-etablissements-by-infractions-csv:
-  description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant en csv
-  get:
-    description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
-    responses:
-      200:
-        body:
-          application/xml:
-            example: |
-                etablissement,nb_infractions
-                RESTAURANT 1,33
-                RESTAURANT 2,30
-                RESTAURANT 3,26
-      500:
-          body:
-            application/json:
-              example: {
-                        "error": "Erreur lors de la connexion à la base de données",
-                        "details": "Error message details."
-                        }
+            type: formulaire_profil_utilisateur
+        responses:
+          201:
+            body:
+              application/json:
+                example: {"message": "Profil utilisateur créé avec succès"}
+          400:
+            body:
+              application/json:
+                example: {"error": "svp remplir tous les champs demandés"}
   /post-inspection:
-  description: Sert à offrir un service permettant de faire une demande d'inspection à la ville.
-  post:
-    description: Créer une demande d'inspection
-    body:
-      application/json:
-        type: formulaire_demande_inspection
-    responses:
-      201:
+      description: Sert à offrir un service permettant de faire une demande d'inspection à la ville.
+      post:
+        description: Créer une demande d'inspection
         body:
           application/json:
-            example: {"message": "Demande d'inspection effectuée avec succès"}
-      400:
+            type: formulaire_demande_inspection
+        responses:
+          201:
+            body:
+              application/json:
+                example: {"message": "Demande d'inspection effectuée avec succès"}
+          400:
+            body:
+              application/json:
+                example: {"error": "svp remplir tous les champs demandés"}
+          422:
+            body:
+              application/json:
+                example: {"status": "Validation échouée", "errors": "error message"}
+  /delete-inspection:
+      description: Sert à supprimer une demande d'inspection
+      delete:
+        description: Supprime une demande d'inspection
         body:
           application/json:
-            example: {"error": "svp remplir tous les champs demandés"}
-            example: {"error": "nom_user dépasse 50 caractères"
-      422:
-        body:
-          application/json:
-            example: {"status": "error", "message": "Validation échouée", "errors": "Validation failed"}
+            type: formulaire_supprimer_inspection
+        responses:
+          200:
+            body:
+              application/json:
+                example: {"message": "Demande d'inspection supprimé avec succès"}
+          400:
+            body:
+              application/json:
+                example: {"error": "nom_user dépasse 50 caractères"}
+          422:
+            body:
+              application/json:
+                example: {"status": "Validation échouée", "errors": "error message"}
+          500:
+            body:
+              application/json:
+                example: {"error": "Suppression de la demande échouée"}
