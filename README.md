@@ -24,12 +24,12 @@ Les données sont accessibles à partir de l'adresse suivante : https://data.mon
 
 #### Pour le tester
 
-Créer la base de donnée:
+Créer la base de donnée :
 ````
 sqlite3 db/db.db < db/db.sql
 ````
 
-Ajouter les données en activant le script:
+Ajouter les données en activant le script :
 ````
 phyton3 script/script.py
 ````
@@ -41,6 +41,14 @@ sqlite3 db/db.db
 sqlite
 select count(*) from contrevenants;
 ````
+
+Activer un environnement virtuel :
+```
+python3 -m venv venv
+. venv/bin/activate
+```
+
+Partir l'application Flask en utilisant la commande `make` sur le terminal.
 
 ### A2 10xp
 
@@ -104,9 +112,13 @@ vous devez créer à cet effet. Lorsque la réponse Ajax revient, l'application 
 
 Le système détecte les nouveaux contrevenants depuis la dernière importation de données, en dresse une liste sans doublon et l'envoi par courriel automatiquement. L'adresse du destinataire du courriel est stocké dans un fichier de configuration en format YAML.
 
+#### Pour le tester
+
+Activer l'application Flask et changer les données dans le fichier index.py
+
 ### B2 10xp
 
-#### Implémenté / Non-implémenté
+#### Non implémenté
 
 Les noms des nouveaux contrevenants sont publiés automatiquement sur un compte Twitter.
 
@@ -169,7 +181,9 @@ Ensuite, une page de plainte doit permettre à un visiteur sur le site web de fa
 Javascript.
 
 #### Pour le tester
-Remplir le formulaire qui indique une demande d'inspection pour un restaurant
+
+Remplir le formulaire qui indique une demande d'inspection pour un restaurant et appuyer sur "soumettre". Un message de confirmation devrait 
+s'afficher. 
 
 ### D2 5xp
 
@@ -191,14 +205,14 @@ Envoyer une requête à la route http://127.0.0.1:5000/api/delete-inspection en 
 
 ### D3 15xp
 
-#### Implémenté / Non-implémenté
+#### Non-implémenté
 
 Modifier l'application faite en A5 afin de pouvoir supprimer ou modifier les contrevenants retournés par l'outil de recherche. L'application doit invoquer des services de votre choix avec des appels Ajax et afficher une confirmation en cas de succès ou un message d'erreur en cas d'erreur. Les changements aux
 contrevenants (modification et suppression) doivent être préservés en tout temps, même lors d’une synchronisation quotidienne. Les services doivent être documentés avec RAML sur /doc.
 
 ### D4 15xp
 
-#### Implémenté / Non-implémenté
+#### Non-implémenté
 
 Le système offre une procédure d'authentification du type « Basic Auth » et permet de restreindre l'accès aux fonctionnalités de modification et suppression de D3 uniquement à un utilisateur prédéfini. Assurez-vous de spécifier clairement les données d’authentification pour la correction.
 
@@ -232,27 +246,27 @@ Faire un post en suivant l'exemple suivant :
 
 ### E2 15xp
 
-#### Implémenté / Non-implémenté
+#### Non-implémenté
 
 Le système offre une page web pour invoquer le service fait en E1. Le système offre également une option d’authentification. Après l’authentification, une page permettant de modifier la liste des noms d’établissements à surveiller est disponible. L’utilisateur authentifié peut également téléverser une
 photo de profil (qui sera sauvegardée dans la base de données). Vous devez accepter les formats jpg et png.
 
 ### E3 5xp
 
-#### Implémenté / Non-implémenté
+#### Non-implémenté
 
 Lorsqu'un nouveau contrevenant est détecté, un courriel est automatiquement envoyé à tous les utilisateurs qui surveillent cet établissement.
 
 ### E4 10xp
 
-#### Implémenté / Non-implémenté
+#### Non-implémenté
 
 Le courriel envoyé au point E3 contient un lien pour se désabonner du restaurant. Le lien amènera à une page HTML qui demandera une confirmation à l'utilisateur. Si l'utilisateur confirme le désabonnement, une requête Ajax invoquera un service REST pour supprimer le restaurant du profil de
 l'utilisateur.
 
 ### F1 15xp
 
-#### Implémenté / Non-implémenté
+#### Non-implémenté
 
 Le système est entièrement déployé sur la plateforme infonuagique Heroku. Pour compléter ce point, vous pouvez transformer votre projet pour utiliser la base de données PostgreSQL. Il est possible de le faire avec SQLite, c’est donc à votre discrétion.
 
