@@ -35,20 +35,20 @@ footer {
 .navbar img {
     width: 20%;
 }
-  
+
 .navbar ul {
     display: flex;
     list-style: none;
 }
-  
+
 .navbar ul li {
     margin-left: 1rem;
 }
-  
+
 .navbar ul li:first-child {
     margin-left: 0;
 }
-  
+
 .navbar a {
     font-size: 1em;
     color: #000000;
@@ -61,7 +61,7 @@ footer {
     background-color: #5c4d48;
     color: #cccccc;
 }
-  
+
 /* Style pour les forms */
 .search, .form-ajax, .form-api-post-inspection {
     padding: 2% ;
@@ -71,7 +71,7 @@ footer {
 .forms {
     margin-top: 5%;
 }
-  
+
 .search input[type="text"]{
     width: 50%;
     margin-left: 25%;
@@ -104,10 +104,9 @@ button[type=submit] {
     border-radius: 4px;
     cursor: pointer;
 }
-  
+
 /* Style for the CSV data */
 .confirmation {
-    display: compact;
     padding: 6%;
 }
 
@@ -116,13 +115,13 @@ table {
     border-collapse: collapse;
     width: 95%;
 }
-  
+
 th, td {
     padding: 0.5rem;
     text-align: left;
     border: 1px solid #ccc;
 }
-  
+
 th {
     background-color: #5c4d48;
     color: #fff;
@@ -136,19 +135,27 @@ th {
 }
 
 .anchor ul {
-  list-style-type: none;
+    list-style-type: none;
 }
 
 .anchor li {
-  display: inline-block;
-  margin-right: 20px;
+    display: inline-block;
+    margin-right: 20px;
 }
 
 .anchor a {
-  color: #333;
-  text-decoration: none;
+    color: #333;
+    text-decoration: none;
 }
 
 .anchor a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
+}
+
+/* PAGE 404 */
+.page-err {
+    display: flex;
+    flex-direction: column ;
+    align-items: center;
+    padding: 5%;
 }

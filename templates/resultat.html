@@ -11,9 +11,11 @@
 		    {% for contrevenant in contrevenants %}
             <br>
             <table class="tab-confirmation">
+                <tr>
                 <th>Numéro de poursuite</th>
                 <td>{{ contrevenant.id_poursuite }}</td>
                 </tr>
+                <tr>
                 <th>Numéro d'établissement</th>
                 <td>{{ contrevenant.business_id }}</td>
                 </tr>
@@ -25,21 +27,27 @@
                 <th>Propriétaire</th>
                 <td>{{ contrevenant.proprietaire }}</td>
                 </tr>
+                <tr>
                 <th>Adresse</th>
                 <td>{{ contrevenant.adresse }}</td>
                 </tr>
+                <tr>
                 <th>Catégorie</th>
                 <td>{{ contrevenant.categorie }}</td>
                 </tr>
+                <tr>
                 <th>Date de l'infraction</th>
                 <td>{{ contrevenant.date_infraction }}</td>
                 </tr>
+                <tr>
                 <th>Date du jugement</th>
                 <td>{{ contrevenant.date_jugement }}</td>
                 </tr>
+                <tr>
                 <th>Description de l'infraction</th>
                 <td>{{ contrevenant.description }}</td>
                 </tr>
+                <tr>
                 <th>Montant</th>
                 <td>{{ contrevenant.montant }}</td>
                 </tr>
@@ -49,6 +57,6 @@
 		{% else %}
 			<div class="tab-confirmation">Aucun résultat.</div>
 		{% endif %}
-    <p>Bonne journée!</span></p>
+    <p>Bonne journée!</p>
 </div>
 {% endblock %}
