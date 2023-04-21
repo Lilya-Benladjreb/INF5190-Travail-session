@@ -21,13 +21,17 @@ types:
     properties:
       nom_user:
         type: string
+        maxLength: 50
       prenom_user:
         type: string
+        maxLength: 50
       adresse_courriel:
         type: string
+        maxLength: 100
       etablissements:
         type: array
         items: string
+        maxLength: 255
       mot_de_passe:
         type: string
     required: [nom_user, prenom_user, adresse_courriel, etablissements, mot_de_passe]
@@ -38,19 +42,25 @@ types:
     properties:
       etablissement:
         type: string
+        maxLength: 100
       adresse:
         type: string
+        maxLength: 100
       ville:
         type: string
+        maxLength: 50
       date_visite:
         type: string
         pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
       nom_user:
         type: string
+        maxLength: 50
       prenom_user:
         type: string
+        maxLength: 50
       description_problem:
         type: string
+        maxLength: 255
     required: [etablissement, adresse, ville, date_visite, nom_user, prenom_user, description_problem]
     additionalProperties: false
 
@@ -59,12 +69,16 @@ types:
     properties:
       etablissement:
         type: string
+        maxLength: 100
       ville:
         type: string
+        maxLength: 50
       nom_user:
         type: string
+        maxLength: 50
       prenom_user:
         type: string
+        maxLength: 50
     required: [etablissement, ville, nom_user, prenom_user]
     additionalProperties: false
 
@@ -203,3 +217,24 @@ types:
                         "error": "Erreur lors de la connexion à la base de données",
                         "details": "Error message details."
                         }
+  /post-inspection:
+  description: Sert à offrir un service permettant de faire une demande d'inspection à la ville.
+  post:
+    description: Créer une demande d'inspection
+    body:
+      application/json:
+        type: formulaire_demande_inspection
+    responses:
+      201:
+        body:
+          application/json:
+            example: {"message": "Demande d'inspection effectuée avec succès"}
+      400:
+        body:
+          application/json:
+            example: {"error": "svp remplir tous les champs demandés"}
+            example: {"error": "nom_user dépasse 50 caractères"
+      422:
+        body:
+          application/json:
+            example: {"status": "error", "message": "Validation échouée", "errors": "Validation failed"}

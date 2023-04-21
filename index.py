@@ -422,22 +422,22 @@ def _valider_parameters(etablissement, nom_user, prenom_user,
 
     if len(etablissement) > 100:
         validated = False
-        return jsonify({"error": "etablissement est plus haut de 100 charactères"}), 400
+        return jsonify({"error": "etablissement dépasse 100 caractères"}), 400
     elif len(nom_user) > 50:
         validated = False
-        return jsonify({"error": "nom_user est plus haut de 100 charactères"}), 400
+        return jsonify({"error": "nom_user dépasse 50 caractères"}), 400
     elif len(prenom_user) > 50:
         validated = False
-        return jsonify({"error": "prenom_user est plus haut de 100 charactères"}), 400
+        return jsonify({"error": "prenom_user dépasse 50 caractères"}), 400
     elif len(adresse) > 100:
         validated = False
-        return jsonify({"error": "adresse est plus haut de 100 charactères"}), 400
+        return jsonify({"error": "adresse dépasse 100 caractères"}), 400
     elif len(ville) > 50:
         validated = False
-        return jsonify({"error": "ville est plus haut de 100 charactères"}), 400
+        return jsonify({"error": "ville dépasse 50 caractères"}), 400
     elif len(probleme) > 255:
         validated = False
-        return jsonify({"error": "probleme est plus haut de 255 charactères"}), 400
+        return jsonify({"error": "probleme dépasse de 255 caractères"}), 400
     else:
         validated = True
 
@@ -450,16 +450,16 @@ def _valider_delete_inspection(etablissement, nom_user,
     validated = True
     if len(etablissement) > 100:
         validated = False
-        return jsonify({"error": "etablissement est plus haut de 100 charactères"}), 400
+        return jsonify({"error": "etablissement dépasse 100 caractères"}), 400
     elif len(nom_user) > 50:
         validated = False
-        return jsonify({"error": "nom_user est plus haut de 100 charactères"}), 400
+        return jsonify({"error": "nom_user dépasse 50 caractères"}), 400
     elif len(prenom_user) > 50:
         validated = False
-        return jsonify({"error": "prenom_user est plus haut de 100 charactères"}), 400
+        return jsonify({"error": "prenom_user dépasse 50 caractères"}), 400
     elif len(ville) > 50:
         validated = False
-        return jsonify({"error": "ville est plus haut de 100 charactères"}), 400
+        return jsonify({"error": "ville dépasse 50 caractères"}), 400
     else:
         validated = True
 
