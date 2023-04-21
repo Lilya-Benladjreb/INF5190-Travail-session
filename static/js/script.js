@@ -1,59 +1,86 @@
 console.log("JS fonctionne")
 
-function submitFormAjax() {
-    console.log("submitFormAjax()")
-    const form = document.getElementById('search-by-date');
-    const table = document.querySelector('#contrevenants-table');
+async function handleSearchFormSubmit( event ) {
+    event.preventDefault();
 
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
+    const dateDebut = document.getElementById( "du" ).value;
+    const dateFin = document.getElementById( "au" ).value;
+    let xhr = new XMLHttpRequest();
 
-        const startDate = form.querySelector('#du').value;
-        const endDate = form.querySelector('#au').value;
+    try {
+        xhr.open( 'GET', "/api/contrevenants?du=${dateDebut}&au=${dateFin}" );
+        xhr.onload = function() {
+            if ( xhr.status === 200 ) {
+                let resultats = JSON.parse( xhr.responseText );
+                let valeursIndex6 = [];
 
+                for ( let i = 0; i < resultats.length; i++ ) {
+                    valeursIndex6.push( resultats[ i ][ 6 ] );
+                }
 
-        fetch(`/api/contrevenants?$du=${startDate}&au=${endDate}`)
-            .then(response => response.json())
-            .then(data => {
-                const filteredContrevenants = data;
-                const establishments = {};
+                let occurences = {};
 
-                filteredContrevenants.forEach(contrevenant => {
-                    if (!establishments[contrevenant.etablissement]) {
-                        establishments[contrevenant.etablissement] = {
-                            nbContraventions: 0
-                        };
+                for ( let i = 0; i < valeursIndex6.length; i++ ) {
+                    let valeur = valeursIndex6[i];
+                    if ( occurences[ valeur ] === undefined ) {
+                        occurences[ valeur ] = 1;
+                    } else {
+                        occurences[ valeur ]++;
                     }
-                    establishments[contrevenant.etablissement].nbContraventions += 1;
-                });
+                }
+                afficherResultats( occurences );
+            } else {
+                console.log( 'Erreur ' + xhr.status );
+            }
+        };
+        xhr.send();
+    } catch ( error ) {
+        console.error( "Erreur lors de la récupération des données :", error );
+    }
+}
 
-                // clear previous table rows
-                table.innerHTML = '';
+const inputSearchForm = document.getElementById( "search-by-date" );
 
-                // add table headers
-                const tableHeaders = `
-        <tr>
-          <th>Nom de l'établissement</th>
-          <th>Nombre de contraventions</th>
-        </tr>
-      `;
-                table.insertAdjacentHTML('beforeend', tableHeaders);
+if( inputSearchForm ) {
+    document.getElementById( "search-by-date" ).
+    addEventListener( "submit", handleSearchFormSubmit );
+}
 
-                // add table rows
-                Object.keys(establishments).forEach(establishment => {
-                    const nbContraventions = establishments[establishment].nbContraventions;
-                    const tableRow = `
-          <tr>
-            <td>${establishment}</td>
-            <td>${nbContraventions}</td>
-          </tr>
-        `;
-                    table.insertAdjacentHTML('beforeend', tableRow);
-                });
-            })
-            .catch(error => console.error(error));
-    });
-    return false;
+function afficherResultats( resultats ) {
+
+    let tableResultats = document.createElement( "table" );
+    let tbodyResultats = document.createElement( "tbody" );
+    let trHeader = document.createElement( "tr" );
+    let thValeur = document.createElement( "th" );
+    let thOccurrences = document.createElement( "th" );
+
+    thValeur.innerText = "Établissement";
+    thOccurrences.innerText = "Nombre d'infractions";
+
+    trHeader.appendChild( thValeur );
+    trHeader.appendChild( thOccurrences );
+    tbodyResultats.appendChild( trHeader );
+
+    for ( let valeur in resultats ) {
+
+        let trOccurrence = document.createElement( "tr" );
+        let tdValeur = document.createElement( "td" );
+        let tdOccurrences = document.createElement( "td" );
+
+        tdValeur.innerText = valeur;
+        tdOccurrences.innerText = resultats[ valeur ];
+
+        trOccurrence.appendChild( tdValeur );
+        trOccurrence.appendChild( tdOccurrences );
+
+        tbodyResultats.appendChild( trOccurrence );
+    }
+
+    tableResultats.appendChild( tbodyResultats );
+    let divResultats = document.getElementById( "resultats" );
+    divResultats.innerHTML = "";
+    divResultats.appendChild( tableResultats );
+
 }
 
 /* Fonction servant à modifier la requete html en json pour l'envoyer à l'API */

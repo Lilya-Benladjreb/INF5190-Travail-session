@@ -30,7 +30,7 @@
     <div class="form-ajax" id="searchbydate">
         <h2>Pour une recherche sous forme de date</h2>
         <br>
-            <form method="get" name="search-by-date" onsubmit="return submitFormAjax()" class="recherche">
+            <form method="get" action="/api/contrevenants" name="search-by-date" class="recherche" onsubmit="return handleSearchFormSubmit()">
                 <label for="du">Du:</label>
                 <br>
                 <input type="date" id="du" name="du" required>
@@ -42,7 +42,7 @@
                 <button type="submit">Soumettre</button>
             </form>
 
-        <table id="contrevenants-table" class="table">
+        <table id="resultats" class="table">
         </table>
     </div>
 
