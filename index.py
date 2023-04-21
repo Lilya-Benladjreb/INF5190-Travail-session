@@ -265,7 +265,8 @@ def get_etablissements_by_infractions_json():
     except Exception as e:
         return jsonify(
             {'error': 'Erreur lors de la connexion à la base de données',
-             'details': str(e)}), 500
+             'message': str(e)}), 500
+
 
 # Sert à recevoir la liste de tous les établissements ainsi que
 # leur nombre d'infractions en ordre décroissant (XML)
@@ -279,29 +280,35 @@ def get_etablissements_xml():
     except Exception as e:
         return jsonify(
             {'error': 'Erreur lors de la connexion à la base de données',
-             'details': str(e)}), 500
+             'message': str(e)}), 500
 
 
 # Sert à recevoir la liste de tous les établissements ainsi que leur
 # nombre d'infractions en ordre décroissant (CSV)
 @app.route('/api/get-etablissements-by-infractions-csv', methods=['GET'])
 def get_etablissements_by_infractions_csv():
-    ordered_contrevenants = get_db().get_list_contrevenants()
+    try:
+        ordered_contrevenants = get_db().get_list_contrevenants()
 
-    csv_data = StringIO()
-    fieldnames = ['etablissement', 'nb_infractions']
-    writer = csv.DictWriter(csv_data, fieldnames=fieldnames)
+        csv_data = StringIO()
+        fieldnames = ['etablissement', 'nb_infractions']
+        writer = csv.DictWriter(csv_data, fieldnames=fieldnames)
 
-    # Écrire CSV data dans le StringIO object
-    writer.writeheader()
-    for contrevenant in ordered_contrevenants:
-        writer.writerow(contrevenant)
+        # Écrire CSV data dans le StringIO object
+        writer.writeheader()
+        for contrevenant in ordered_contrevenants:
+            writer.writerow(contrevenant)
 
-    # Retourner le CSV data en réponse Flask
-    response = Response(csv_data.getvalue(), mimetype='text/csv')
-    response.headers.set('Content-Disposition', 'attachment',
-                         filename='contrevenants.csv')
-    return response, 200
+        # Retourner le CSV data en réponse Flask
+        response = Response(csv_data.getvalue(), mimetype='text/csv')
+        response.headers.set('Content-Disposition', 'attachment',
+                             filename='contrevenants.csv')
+        return response, 200
+
+    except Exception as e:
+        return jsonify(
+            {'error': 'Erreur lors de la connexion à la base de données',
+             'message': str(e)}), 500
 
 
 # Sert à offrir un service REST permettant de faire une
@@ -328,11 +335,15 @@ def create_inspection_request():
             or probleme == "":
         return jsonify({'error': 'svp remplir tous les champs demandés'}), 400
     else:
-        get_db().post_inspection(etablissement, adresse, ville,
-                                 date_visite, nom_user, prenom_user,
-                                 probleme)
-        return jsonify({"message": "Demande d'inspection effectuée "
-                                   "avec succès"}), 201
+
+        if _valider_parameters(etablissement, nom_user,
+                               prenom_user, adresse,
+                               ville, probleme) is True:
+            get_db().post_inspection(etablissement, adresse, ville,
+                                     date_visite, nom_user, prenom_user,
+                                     probleme)
+            return jsonify({"message": "Demande d'inspection effectuée "
+                                       "avec succès"}), 201
 
 
 # Sert à supprimer une demande d'inspection
@@ -353,10 +364,13 @@ def delete_inspection_request():
     ville = json_data['ville']
 
     try:
-        get_db().delete_inspection(etablissement, nom_user,
-                                   prenom_user, ville)
-        return jsonify({"message": "Demande d'inspection supprimé"
-                                   " avec succès"}), 200
+
+        if _valider_delete_inspection(etablissement, nom_user,
+                                      prenom_user, ville) is True:
+            get_db().delete_inspection(etablissement, nom_user,
+                                       prenom_user, ville)
+            return jsonify({"message": "Demande d'inspection supprimé"
+                                       " avec succès"}), 200
     except Exception as e:
         return jsonify({"error": "Suppression de la demande échouée"}), 500
 
@@ -399,3 +413,54 @@ def _filter_contrevenants_date(contrevenants, query_du, query_au):
         if query_au >= term >= query_du:
             filter_contrevenants.append(contrevenant)
     return filter_contrevenants
+
+
+# Sert à valider les entrées qui seront mises dans la BD
+def _valider_parameters(etablissement, nom_user, prenom_user,
+                        adresse, ville, probleme):
+    validated = True
+
+    if len(etablissement) > 100:
+        validated = False
+        return jsonify({"error": "etablissement est plus haut de 100 charactères"}), 400
+    elif len(nom_user) > 50:
+        validated = False
+        return jsonify({"error": "nom_user est plus haut de 100 charactères"}), 400
+    elif len(prenom_user) > 50:
+        validated = False
+        return jsonify({"error": "prenom_user est plus haut de 100 charactères"}), 400
+    elif len(adresse) > 100:
+        validated = False
+        return jsonify({"error": "adresse est plus haut de 100 charactères"}), 400
+    elif len(ville) > 50:
+        validated = False
+        return jsonify({"error": "ville est plus haut de 100 charactères"}), 400
+    elif len(probleme) > 255:
+        validated = False
+        return jsonify({"error": "probleme est plus haut de 255 charactères"}), 400
+    else:
+        validated = True
+
+    return validated
+
+
+# Sert à valider les paramètres recu en Json pour la suppression
+def _valider_delete_inspection(etablissement, nom_user,
+                                      prenom_user, ville):
+    validated = True
+    if len(etablissement) > 100:
+        validated = False
+        return jsonify({"error": "etablissement est plus haut de 100 charactères"}), 400
+    elif len(nom_user) > 50:
+        validated = False
+        return jsonify({"error": "nom_user est plus haut de 100 charactères"}), 400
+    elif len(prenom_user) > 50:
+        validated = False
+        return jsonify({"error": "prenom_user est plus haut de 100 charactères"}), 400
+    elif len(ville) > 50:
+        validated = False
+        return jsonify({"error": "ville est plus haut de 100 charactères"}), 400
+    else:
+        validated = True
+
+    return validated

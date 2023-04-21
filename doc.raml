@@ -135,11 +135,12 @@ types:
       Content-Type:
         example: "application/json"
   /get-etablissements-by-infractions-json:
-  description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant (json)
+  description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant en json
   get:
     description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
     responses:
       200:
+        description: Successful response
         body:
           application/json:
             example: |
@@ -149,19 +150,23 @@ types:
                 {"etablissement": "Café C", "nb_infractions": 5}
               ]
       500:
-          body:
-            application/json:
-              example: {"error": "Erreur lors de la connexion à la base de données"}
+        description: Error response
+        body:
+          application/json:
+            example: {
+                      "error": "Erreur lors de la connexion à la base de données",
+                      "details": "Error message details."
+                      }
   /get-etablissements-by-infractions-xml:
-  description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant (xml)
+  description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant en xml
   get:
     description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
     responses:
       200:
+        description: Successful response
         body:
           application/xml:
             example: |
-              <?xml version="1.0" encoding="UTF-8"?>
               <contrevenants>
                 {% for contrevenant in contrevenants %}
                   <etablissement>
@@ -171,7 +176,30 @@ types:
                   {% endfor %}
               </contrevenants>
       500:
+        description: Error response
+        body:
+          application/json:
+            example: {
+                      "error": "Erreur lors de la connexion à la base de données",
+                      "details": "Error message details."
+                      }
+  /get-etablissements-by-infractions-csv:
+  description: Sert à recevoir la liste de tous les établissements ainsi que leur nombre d'infractions en ordre décroissant en csv
+  get:
+    description: Retourne la liste des établissements avec le nombre d'infractions associées en ordre décroissant
+    responses:
+      200:
+        body:
+          application/xml:
+            example: |
+                etablissement,nb_infractions
+                RESTAURANT 1,33
+                RESTAURANT 2,30
+                RESTAURANT 3,26
+      500:
           body:
             application/json:
-              example: {"error": "Erreur lors de la connexion à la base de données"}
-
+              example: {
+                        "error": "Erreur lors de la connexion à la base de données",
+                        "details": "Error message details."
+                        }
