@@ -249,7 +249,8 @@ def create_user():
                               email, etablissements) is True:
             salt = uuid.uuid4().hex
             hashed_password = \
-                hashlib.sha512(str(password + salt).encode("utf-8")).hexdigest()
+                hashlib.sha512(str(password + salt)
+                               .encode("utf-8")).hexdigest()
             user_id = get_db().create_user(nom_user, prenom_user,
                                            email, salt, hashed_password)
             get_db().create_request(user_id, etablissements)
@@ -441,7 +442,8 @@ def _valider_post_inspection(etablissement, nom_user, prenom_user,
         return jsonify({"error": "ville dépasse 50 caractères"}), 400
     elif len(probleme) > 255:
         validated = False
-        return jsonify({"error": "description_problem dépasse de 255 caractères"}), 400
+        return jsonify({"error": "description_problem "
+                                 "dépasse de 255 caractères"}), 400
     else:
         validated = True
 
@@ -485,7 +487,8 @@ def _valider_post_user(nom_user, prenom_user,
         return jsonify({"error": "prenom_user dépasse 50 caractères"}), 400
     elif len(email) > 100:
         validated = False
-        return jsonify({"error": "adresse_courriel dépasse 50 caractères"}), 400
+        return jsonify({"error": "adresse_courriel "
+                                 "dépasse 50 caractères"}), 400
     else:
         validated = True
 

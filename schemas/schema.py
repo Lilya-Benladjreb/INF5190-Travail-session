@@ -13,7 +13,8 @@ formulaire_profil_utilisateur = {
         "etablissements": {"type": "array", "items": {"type": "string"}},
         "mot_de_passe": {"type": "string"}
     },
-    "required": ["nom_user", "prenom_user", "adresse_courriel", "etablissements", "mot_de_passe"],
+    "required": ["nom_user", "prenom_user",
+                 "adresse_courriel", "etablissements", "mot_de_passe"],
     "additionalProperties": False
 }
 
@@ -23,12 +24,14 @@ formulaire_demande_inspection = {
         "etablissement": {"type": "string"},
         "adresse": {"type": "string"},
         "ville": {"type": "string"},
-        "date_visite": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "date_visite": {"type": "string",
+                        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
         "nom_user": {"type": "string"},
         "prenom_user": {"type": "string"},
         "description_problem": {"type": "string"}
     },
-    "required": ["etablissement", "adresse", "ville", "date_visite", "nom_user", "prenom_user",
+    "required": ["etablissement", "adresse", "ville",
+                 "date_visite", "nom_user", "prenom_user",
                  "description_problem"],
     "additionalProperties": False
 }
